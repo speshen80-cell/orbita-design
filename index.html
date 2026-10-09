@@ -10,7 +10,20 @@
 <meta property="og:locale" content="ru_RU">
 <meta property="og:title" content="Орбита Дизайн — бесплатные объявления для дизайнеров">
 <meta property="og:description" content="Орбита Дизайн — бесплатная площадка объявлений для дизайнеров: логотипы, сайты и интерфейсы, полиграфия, упаковка, иллюстрации, 3D, соцсети и инфографика. Без регистрации и комиссий.">
-<meta name="twitter:card" content="summary">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://speshen80-cell.github.io/orbita-design/">
+<meta property="og:site_name" content="Орбита Дизайн">
+<meta property="og:url" content="https://speshen80-cell.github.io/orbita-design/">
+<meta property="og:image" content="https://speshen80-cell.github.io/orbita-design/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Орбита Дизайн: бесплатные объявления для дизайнеров">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Орбита Дизайн — бесплатные объявления для дизайнеров">
+<meta name="twitter:description" content="Орбита Дизайн — бесплатная площадка объявлений для дизайнеров: логотипы, сайты и интерфейсы, полиграфия, упаковка, иллюстрации, 3D, соцсети и инфографика. Без регистрации и комиссий.">
+<meta name="twitter:image" content="https://speshen80-cell.github.io/orbita-design/og.png">
+<link rel="apple-touch-icon" href="https://speshen80-cell.github.io/orbita-design/og.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "@id": "https://speshen80-cell.github.io/orbita-design/#site", "url": "https://speshen80-cell.github.io/orbita-design/", "name": "Орбита Дизайн", "description": "Орбита Дизайн — бесплатная площадка объявлений для дизайнеров: логотипы, сайты и интерфейсы, полиграфия, упаковка, иллюстрации, 3D, соцсети и инфографика. Без регистрации и комиссий.", "inLanguage": "ru"}, {"@type": "Organization", "@id": "https://speshen80-cell.github.io/orbita-design/#org", "name": "Орбита Дизайн", "url": "https://speshen80-cell.github.io/orbita-design/", "logo": "https://speshen80-cell.github.io/orbita-design/favicon.svg", "email": "proksi874@gmail.com", "sameAs": ["https://t.me/ZakazyFormBot"]}]}</script>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -376,6 +389,12 @@ footer.site .brand { margin-bottom: 4px; }
 .errsum { padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,138,150,.5); background: rgba(255,90,100,.1); color: var(--err); font-size: .9rem; }
 .errsum ul { margin: 6px 0 0; padding-left: 18px; list-style: disc; }
 .about { display: grid; gap: 12px; max-width: 100%; padding: 28px; } .about p:not(.eyebrow) { color: var(--muted); max-width: 78ch; }
+.adslot { display: block; margin: 26px 0; }
+.adslot .adtag { display: block; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.adslot a.adbox { display: flex; align-items: center; justify-content: center; min-height: 96px; border-radius: var(--r); overflow: hidden; border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .03); color: var(--ink, #f3f6fc); text-decoration: none; text-align: center; padding: 14px; }
+.adslot a.adbox img { display: block; width: 100%; max-height: 220px; object-fit: contain; }
+.adslot a.adbox.empty { border-style: dashed; color: var(--muted); }
+.adslot a.adbox.empty b { color: #f4c95d; }
 .legal { display: grid; gap: 10px; max-width: 80ch; } .legal h2 { font-size: 1.1rem; margin-top: 10px; } .legal p { color: var(--muted); }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .savednote { border-color: rgba(93,226,168,.5); color: var(--ok); } .savednote b { color: var(--ink); }
@@ -462,6 +481,15 @@ footer.site .brand { margin-bottom: 4px; }
         <div class="row" style="margin-top:22px"><a class="btn" href="#ads">Все объявления</a></div>
       </section>
 
+      <section class="glass pad" aria-labelledby="h-bot">
+        <p class="eyebrow">Ещё один источник</p>
+        <h2 id="h-bot" style="margin:6px 0 8px">Telegram-бот «ЗаказыФорм»</h2>
+        <p class="muted" style="margin-bottom:14px">Дополнительный способ связаться с площадкой и найти заказы: откройте бота в Telegram.</p>
+        <div class="row"><a class="btn" href="https://t.me/ZakazyFormBot" target="_blank" rel="noopener">Открыть @ZakazyFormBot</a></div>
+      </section>
+
+      <div class="adslot" id="adHome" data-slot="home"></div>
+
       <section aria-labelledby="h-how">
         <div class="sec-head"><p class="eyebrow">Как это работает</p><h2 id="h-how">От объявления до договорённости</h2></div>
         <ol class="grid g4 steps flow">
@@ -490,6 +518,7 @@ footer.site .brand { margin-bottom: 4px; }
           <div class="row"><span class="muted" id="fcount" role="status" aria-live="polite"></span><button class="btn ghost small" id="freset" type="button">Сбросить</button></div>
         </div>
       </div>
+      <div class="adslot" id="adAds" data-slot="ads"></div>
       <div class="grid g3" id="adsList"></div>
       <div class="row" id="moreRow" style="justify-content:center"><button class="btn" id="moreBtn" type="button">Показать ещё</button></div>
     </section>
@@ -648,7 +677,7 @@ footer.site .brand { margin-bottom: 4px; }
         <h2>Какие данные вы указываете</h2>
         <p>В объявлении вы добавляете имя или название студии, описание услуги, фото работ и контакты (телефон, Telegram, e-mail, ссылка на портфолио). Эти данные вы вводите сами и добровольно.</p>
         <h2>Где они хранятся</h2>
-        <p id="pv-store">Пока вы не отправили объявление на публикацию, оно хранится только в памяти вашего браузера на вашем устройстве. Сайт не передаёт его на сервер, не использует файлы cookie для слежки и не подключает счётчики и рекламу. Очистив данные сайта в браузере, вы удалите такие объявления.</p>
+        <p id="pv-store">Пока вы не отправили объявление на публикацию, оно хранится только в памяти вашего браузера на вашем устройстве. Сайт не передаёт его на сервер, не использует файлы cookie для слежки и не подключает счётчики и сторонние рекламные сети. Баннеры рекламодателей размещаются напрямую по договорённости и подписаны словом «Реклама». Очистив данные сайта в браузере, вы удалите такие объявления.</p>
         <h2>Что происходит при публикации</h2>
         <p id="pv-pub">Кнопка «Отправить на публикацию» открывает письмо на почту владельца площадки. Письмо вы отправляете сами из своей почтовой программы. После проверки владелец добавляет объявление в общий каталог, и ваши контакты, указанные в объявлении, становятся видны всем посетителям.</p>
         <h2>Как убрать объявление</h2>
@@ -662,9 +691,25 @@ footer.site .brand { margin-bottom: 4px; }
       </div>
     </section>
 
+    <!-- ============ РЕКЛАМА ============ -->
+    <section class="page" id="advert" data-page="advert" aria-labelledby="h-adv" hidden>
+      <div class="sec-head"><p class="eyebrow">Для бизнеса</p><h1 id="h-adv" class="page-title">Реклама на сайте</h1><p>Разместите баннер там, где дизайнеров и заказчиков видно сразу: на главной и в каталоге.</p></div>
+      <div class="glass pad legal">
+        <h2>Что можно разместить</h2>
+        <p>Баннер со ссылкой на ваш сайт, студию, курс, типографию или сервис для дизайнеров. Баннер подписывается словом «Реклама» и открывается в новой вкладке.</p>
+        <h2>Где показывается</h2>
+        <p>На главной странице под витриной и в каталоге над списком объявлений. Объявления дизайнеров от этого не меняются, они по-прежнему бесплатные.</p>
+        <h2>Как заказать</h2>
+        <p>Напишите нам на почту: укажите, что рекламируете, пришлите картинку баннера (удобный размер около 1200×300) и ссылку. Условия и стоимость согласуем в переписке.</p>
+        <div class="row"><a class="btn" id="advMail" href="#advert">Написать на почту</a></div>
+        <h2>Что не принимается</h2>
+        <p>Обман, запрещённые товары и услуги, чужие бренды без права на них, шокирующие и оскорбительные материалы. Мы вправе отказать в размещении без объяснения причин.</p>
+      </div>
+    </section>
+
     <footer class="site">
       <a class="brand" href="#home" aria-label="Орбита Дизайн, на главную"><span data-logo></span><span><span class="word">ОРБИТА</span><small>ДИЗАЙН</small></span></a>
-      <span>Орбита Дизайн: бесплатная площадка объявлений для дизайнеров. Объявления публикуют сами авторы, проверяйте исполнителя перед оплатой. Почта: proksi874@gmail.com · <a href="#privacy">Политика конфиденциальности</a> · <a href="#terms">Условия использования</a></span>
+      <span>Орбита Дизайн: бесплатная площадка объявлений для дизайнеров. Объявления публикуют сами авторы, проверяйте исполнителя перед оплатой. Почта: proksi874@gmail.com · <a href="#privacy">Политика конфиденциальности</a> · <a href="#terms">Условия использования</a> · <a href="#advert">Реклама на сайте</a> · <a href="https://t.me/ZakazyFormBot" target="_blank" rel="noopener">Telegram-бот @ZakazyFormBot</a></span>
     </footer>
   </main>
 </div>
@@ -749,9 +794,12 @@ footer.site .brand { margin-bottom: 4px; }
     { id: 'info', name: 'Инфографика и презентации', ic: 'chart', hue: 210, kit: ['Инфографика', 'Презентации', 'Дашборды'] }
   ];
   var CAT = { '': { id: '', name: 'Без категории', ic: 'grid', hue: 220, kit: [] } }; CATS.forEach(function (c) { CAT[c.id] = c; });
-  var SITE = { email: 'proksi874@gmail.com', telegram: '', phone: '' };
+  var SITE = { email: 'proksi874@gmail.com', telegram: '', phone: '', bot: 'ZakazyFormBot' };
   /* Одобренные объявления для общего каталога: добавляйте сюда проверенные объявления (формат — как у «Скопировать объявление для каталога»). */
   var PUBLISHED = [];
+  /* Рекламные баннеры. Пример: { slot: 'home', img: 'images/banner1.jpg', url: 'https://example.ru', alt: 'Название рекламодателя' }
+     slot: 'home' (главная), 'ads' (каталог) или 'all' (везде). Пока список пуст, показывается приглашение разместить рекламу. */
+  var BANNERS = [];
   function mailto(subject, body) { return 'mailto:' + SITE.email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body); }
 
   /* ---------- проверка и очистка данных ---------- */
@@ -1008,9 +1056,9 @@ footer.site .brand { margin-bottom: 4px; }
     { id: 'home', t: 'Главная', s: 'Как всё устроено', ic: 'home' }, { id: 'ads', t: 'Объявления', s: 'Найти исполнителя', ic: 'grid' }, { id: 'designers', t: 'Дизайнеры', s: 'Список авторов', ic: 'users' },
     { id: 'post', t: 'Подать объявление', s: 'Разместить бесплатно', ic: 'plus' }, { id: 'saved', t: 'Избранное и мои', s: 'Сохранённое и ваши', ic: 'heart' },
     { id: 'rules', t: 'Правила и вопросы', s: 'Ответы и жалобы', ic: 'book' }, { id: 'contacts', t: 'Контакты', s: 'Связь с площадкой', ic: 'phone' }
-    , { id: 'privacy', t: 'Политика конфиденциальности', s: '', ic: 'book', hide: true }, { id: 'terms', t: 'Условия использования', s: '', ic: 'book', hide: true }
+    , { id: 'privacy', t: 'Политика конфиденциальности', s: '', ic: 'book', hide: true }, { id: 'terms', t: 'Условия использования', s: '', ic: 'book', hide: true }, { id: 'advert', t: 'Реклама на сайте', s: '', ic: 'book', hide: true }
   ];
-  var TITLES = { home: 'Орбита Дизайн — бесплатные объявления для дизайнеров', ads: 'Объявления дизайнеров', designers: 'Дизайнеры', post: 'Подать объявление', saved: 'Избранное и мои объявления', rules: 'Правила и вопросы', contacts: 'Контакты', terms: 'Условия использования', privacy: 'Политика конфиденциальности' };
+  var TITLES = { home: 'Орбита Дизайн — бесплатные объявления для дизайнеров', ads: 'Объявления дизайнеров', designers: 'Дизайнеры', post: 'Подать объявление', saved: 'Избранное и мои объявления', rules: 'Правила и вопросы', contacts: 'Контакты', terms: 'Условия использования', advert: 'Реклама на сайте', privacy: 'Политика конфиденциальности' };
   function buildNav() {
     var nav = $('#menu'); clear(nav);
     PAGES.forEach(function (p) {
@@ -1053,7 +1101,25 @@ footer.site .brand { margin-bottom: 4px; }
   $('#menuBtn').addEventListener('click', function () { var o = $('#rail').classList.toggle('open'); this.setAttribute('aria-expanded', o ? 'true' : 'false'); });
 
   /* ---------- страницы ---------- */
+  function safeUrl(u) { return /^https?:\/\//i.test(String(u || '')) ? String(u) : ''; }
+  function renderBanners() {
+    $$('.adslot').forEach(function (box) {
+      var slot = box.getAttribute('data-slot'); clear(box);
+      var list = BANNERS.filter(function (b) { return b && safeUrl(b.url) && b.img && (b.slot === slot || b.slot === 'all'); });
+      box.appendChild(h('span', { class: 'adtag', text: list.length ? 'Реклама' : 'Реклама на сайте' }));
+      if (list.length) {
+        list.forEach(function (b) {
+          var a = h('a', { class: 'adbox', href: safeUrl(b.url), target: '_blank', rel: 'sponsored noopener noreferrer', 'aria-label': 'Реклама: ' + (b.alt || 'рекламодатель') });
+          a.appendChild(h('img', { src: b.img, alt: b.alt || '', loading: 'lazy' })); box.appendChild(a);
+        });
+      } else {
+        var e = h('a', { class: 'adbox empty', href: '#advert' }); e.appendChild(h('span', {}, 'Здесь может быть ваша реклама. ', h('b', { text: 'Узнать условия' }))); box.appendChild(e);
+      }
+    });
+    var m = $('#advMail'); if (m) m.setAttribute('href', mailto('Реклама на сайте «Орбита Дизайн»', 'Здравствуйте! Хочу разместить рекламу.\n\nЧто рекламируем:\nСсылка:\nГде показать (главная / каталог):\n'));
+  }
   function renderPage(id) {
+    renderBanners();
     if (id === 'home') renderHome(); else if (id === 'ads') renderAds(); else if (id === 'designers') renderDesigners();
     else if (id === 'post') { renderPreview(); showBlockNote(); } else if (id === 'contacts') renderContacts(); else if (id === 'saved') renderSaved();
     $('#modeNote').textContent = BACKEND ? 'Бесплатно, без регистрации. Объявления публикуются сразу и остаются на сайте.' : 'Бесплатно, без регистрации. Ваши объявления хранятся на этом устройстве, отправьте их на публикацию, чтобы их увидели все.';
@@ -1158,6 +1224,7 @@ footer.site .brand { margin-bottom: 4px; }
     var box = $('#siteContacts'); clear(box);
     box.appendChild(row('E-mail', SITE.email, SITE.email, h('a', { class: 'btn small', href: mailto('Вопрос по сайту Орбита Дизайн', '') }, 'Написать')));
     if (SITE.telegram && RE_TG.test(SITE.telegram)) box.appendChild(row('Telegram', '@' + SITE.telegram, '@' + SITE.telegram, h('a', { class: 'btn small', href: 'https://t.me/' + SITE.telegram, target: '_blank', rel: 'noopener' }, 'Открыть')));
+    if (SITE.bot && RE_TG.test(SITE.bot)) box.appendChild(row('Telegram-бот «ЗаказыФорм»', '@' + SITE.bot, '@' + SITE.bot, h('a', { class: 'btn small', href: 'https://t.me/' + SITE.bot, target: '_blank', rel: 'noopener' }, 'Открыть бота')));
     if (SITE.phone && okPhone(SITE.phone)) box.appendChild(row('Телефон', SITE.phone, SITE.phone));
     updateMsgLink();
   }
@@ -1463,7 +1530,7 @@ footer.site .brand { margin-bottom: 4px; }
       T('faq-vis', 'Нажмите «Опубликовать»: объявление сразу появится в каталоге у всех посетителей и останется на сайте 30 дней. Потом его можно продлить.');
       T('faq-edit', 'Откройте «Избранное и мои», найдите своё объявление и нажмите «Изменить», «Продлить» или «Удалить». Изменения сразу видны на сайте. Сайт запоминает вас в этом браузере, регистрация не нужна.');
       T('faq-key', 'В разделе «Избранное и мои» есть «Ключ владельца». Скопируйте его и сохраните. На другом устройстве вставьте ключ в то же место и нажмите «Восстановить»: ваши объявления снова станут доступны для редактирования.');
-      T('pv-store', 'Опубликованное объявление хранится в общей базе площадки, пока вы его не удалите. Избранное и ключ владельца хранятся в памяти вашего браузера. Сайт не использует файлы cookie для слежки и не подключает счётчики и рекламу.');
+      T('pv-store', 'Опубликованное объявление хранится в общей базе площадки, пока вы его не удалите. Избранное и ключ владельца хранятся в памяти вашего браузера. Сайт не использует файлы cookie для слежки и не подключает счётчики и сторонние рекламные сети. Баннеры рекламодателей размещаются напрямую по договорённости и подписаны словом «Реклама».');
       T('pv-pub', 'Кнопка «Опубликовать» отправляет текст и фото объявления в общую базу, и ваши контакты, указанные в объявлении, сразу становятся видны всем посетителям. Для хранения базы используется сервис Google Firebase: он получает данные объявления и анонимный идентификатор вашего браузера, по которому вы можете редактировать объявление.');
       T('pv-del', 'Удалите объявление сами в разделе «Избранное и мои». Если доступа нет, напишите на proksi874@gmail.com: мы удалим его из каталога.');
       T('postIntro', 'Размещение бесплатное: объявление сразу появится в каталоге и будет там 30 дней. Вы сможете изменить, продлить или удалить его в разделе «Избранное и мои». Обязательны заголовок, описание, имя и хотя бы один контакт. Направление указывать необязательно.');
