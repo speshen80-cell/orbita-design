@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /saved.html
 
 Sitemap: https://speshen80-cell.github.io/orbita-design/sitemap.xml
