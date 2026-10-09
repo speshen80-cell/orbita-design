@@ -1,0 +1,4 @@
+[
+  { "slot": "home", "img": "banner1.jpg", "url": "https://example.ru", "alt": "Название рекламодателя" },
+  { "slot": "ads", "img": "banner2.jpg", "url": "https://example.com", "alt": "Другой рекламодатель" }
+]
