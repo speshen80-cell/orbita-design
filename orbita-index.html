@@ -1,0 +1,1512 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Орбита Дизайн — бесплатные объявления для дизайнеров</title>
+<meta name="description" content="Орбита Дизайн — бесплатная площадка объявлений для дизайнеров: логотипы, сайты и интерфейсы, полиграфия, упаковка, иллюстрации, 3D, соцсети и инфографика. Без регистрации и комиссий.">
+<meta name="theme-color" content="#02030a">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:title" content="Орбита Дизайн — бесплатные объявления для дизайнеров">
+<meta property="og:description" content="Орбита Дизайн — бесплатная площадка объявлений для дизайнеров: логотипы, сайты и интерфейсы, полиграфия, упаковка, иллюстрации, 3D, соцсети и инфографика. Без регистрации и комиссий.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700;800&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700;800&display=swap"></noscript>
+</head>
+<body>
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700;800&display=swap"></noscript>
+<style>
+/* Layout: слева колонка 3D-кнопок сверху вниз, справа контент в стеклянных панелях.
+   Фон: чёрный космос, слитый с красным свечением, белые звёзды (canvas до 3x DPR для 4K).
+   Кнопки: изумруд с вращающейся золотой кромкой, бликом и свечением. Одна тёмная тема намеренно. */
+@property --ang { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+:root {
+  --bg: #02030a;
+  --ink: #f3f6fc;
+  --muted: #a9b4c9;
+  --line: rgba(255, 255, 255, .12);
+  --red: #ff2d44;
+  --glow-a: rgba(205, 222, 255, .30);
+  --glow-b: rgba(255, 255, 255, .17);
+  --glow-c: rgba(120, 150, 230, .16);
+  --gold: #f3c653;
+  --gold-hi: #fff3c4;
+  --gold-lo: #9a6b12;
+  --gold-soft: #ffe4a3;
+  --gold-glow: rgba(243, 198, 83, .34);
+  --em-hi: #1bc487;
+  --em: #0b8a58;
+  --em-lo: #066b43;
+  --em-edge: #04432a;
+  --err: #ff8a96;
+  --ok: #5de2a8;
+  --display: "Unbounded", "Arial Black", Impact, sans-serif;
+  --text: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --r: 18px;
+  --gutter: clamp(16px, 4vw, 40px);
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--ink); font: 500 1rem/1.6 var(--text); overflow-x: hidden; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+h1, h2, h3, h4, p, ul, ol, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: var(--gold-soft); }
+img, svg { max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+h1, h2, h3 { text-wrap: balance; }
+h1, h2 { font-family: var(--display); font-weight: 700; line-height: 1.15; letter-spacing: -.01em; }
+h1 { font-size: clamp(1.9rem, 4.4vw, 3.4rem); }
+h2 { font-size: clamp(1.35rem, 2.8vw, 2rem); }
+h3 { font: 700 1.125rem/1.3 var(--text); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.muted { color: var(--muted); }
+.gold-text { background: linear-gradient(100deg, var(--gold-hi) 0%, var(--gold) 35%, #fff 50%, var(--gold) 65%, var(--gold-lo) 100%); background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: sheen 6s ease-in-out infinite; }
+@keyframes sheen { 0%, 100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
+
+/* ===== Космос ===== */
+.space { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  background:
+    linear-gradient(118deg, transparent 30%, rgba(190, 210, 255, .07) 41%, rgba(255, 255, 255, .15) 50%, rgba(190, 210, 255, .07) 59%, transparent 70%),
+    radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,255,255,.9), transparent 60%), radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,.8), transparent 60%),
+    radial-gradient(62vmax 50vmax at 90% -12%, var(--glow-a), transparent 62%),
+    radial-gradient(52vmax 46vmax at -12% 108%, var(--glow-b), transparent 64%),
+    radial-gradient(42vmax 32vmax at 52% 58%, var(--glow-c), transparent 72%),
+    var(--bg); }
+.space i { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .5; }
+.space i:nth-child(1) { width: 46vmax; height: 30vmax; left: 30%; top: -10%; background: rgba(200, 220, 255, .20); animation: drift1 38s ease-in-out infinite alternate; }
+.space i:nth-child(2) { width: 40vmax; height: 26vmax; right: -10%; bottom: -8%; background: rgba(255, 255, 255, .13); animation: drift2 46s ease-in-out infinite alternate; }
+.space i:nth-child(3) { width: 24vmax; height: 18vmax; left: 6%; top: 40%; background: rgba(243, 198, 83, .07); animation: drift1 52s ease-in-out infinite alternate-reverse; }
+@keyframes drift1 { to { transform: translate3d(8vw, 6vh, 0) scale(1.15); } }
+@keyframes drift2 { to { transform: translate3d(-9vw, -7vh, 0) scale(1.1); } }
+#stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.grain { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: .045; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
+
+/* ===== Каркас ===== */
+.shell { position: relative; z-index: 1; display: grid; grid-template-columns: 296px minmax(0, 1fr); min-height: 100vh; }
+.rail { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 24px 20px; display: flex; flex-direction: column; gap: 22px; border-right: 1px solid var(--line); background: linear-gradient(180deg, rgba(6, 8, 16, .88), rgba(3, 4, 10, .62)); backdrop-filter: blur(10px); }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
+.logo3d { width: 56px; height: 56px; flex: none; overflow: visible; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .7)) drop-shadow(0 0 16px rgba(214, 228, 255, .45)); animation: logofloat 6s ease-in-out infinite; }
+@keyframes logofloat { 50% { transform: translateY(-3px) rotate(-2deg); } }
+.word { display: block; font: 800 1.3rem/1 var(--display); letter-spacing: .08em; background: linear-gradient(180deg, #fff7d4 0%, #f3c653 46%, #b57f16 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 1px 0 #6b4708) drop-shadow(0 2px 0 #5a3b06) drop-shadow(0 3px 0 #4a3005) drop-shadow(0 7px 8px rgba(0, 0, 0, .65)) drop-shadow(0 0 14px rgba(214, 228, 255, .4)); }
+.brand small { display: block; margin-top: 7px; font-size: .6875rem; letter-spacing: .32em; color: var(--muted); font-weight: 700; }
+.menu { display: flex; flex-direction: column; gap: 12px; }
+.rail-foot { margin-top: auto; font-size: .8125rem; color: var(--muted); display: grid; gap: 6px; }
+.topbar { display: none; }
+main { min-width: 0; padding: clamp(24px, 4vw, 48px) var(--gutter) 64px; }
+.page[hidden] { display: none; }
+.page { display: grid; gap: clamp(28px, 5vw, 56px); max-width: 1120px; margin-inline: auto; }
+.page.enter { animation: enter .55s cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes enter { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+.page.enter .grid > * { animation: rise .65s cubic-bezier(.2, .7, .2, 1) both; }
+.page.enter .grid > *:nth-child(2) { animation-delay: .06s; } .page.enter .grid > *:nth-child(3) { animation-delay: .12s; }
+.page.enter .grid > *:nth-child(4) { animation-delay: .18s; } .page.enter .grid > *:nth-child(5) { animation-delay: .24s; }
+.page.enter .grid > *:nth-child(n+6) { animation-delay: .3s; }
+@keyframes rise { from { opacity: 0; transform: translateY(26px) rotateX(8deg); } to { opacity: 1; transform: none; } }
+
+/* ===== Кнопки: изумруд + золото ===== */
+.btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 46px; padding: 11px 22px; border: 1.5px solid transparent; border-radius: 14px; color: #fff; font: 700 .95rem/1.2 var(--text); letter-spacing: .01em; text-decoration: none; cursor: pointer; isolation: isolate;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .3) 0%, rgba(255, 255, 255, 0) 48%) padding-box,
+    linear-gradient(180deg, var(--em-hi), var(--em) 55%, var(--em-lo)) padding-box,
+    conic-gradient(from var(--ang), var(--gold), var(--gold-hi) 10%, var(--gold-lo) 24%, var(--gold) 38%, rgba(243, 198, 83, .22) 58%, var(--gold) 80%, var(--gold-hi) 90%, var(--gold)) border-box;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .4) inset, 0 -2px 6px rgba(0, 0, 0, .25) inset, 0 5px 0 var(--em-edge), 0 16px 28px rgba(0, 0, 0, .6), 0 0 26px var(--gold-glow);
+  transition: transform .14s ease, box-shadow .14s ease, filter .14s ease; animation: spinb 7s linear infinite; }
+@keyframes spinb { to { --ang: 360deg; } }
+.btn::after { content: ""; position: absolute; z-index: -1; top: -20%; bottom: -20%; left: -70%; width: 40%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .5), transparent); transform: skewX(-22deg); animation: shine 5.5s ease-in-out infinite; pointer-events: none; }
+@keyframes shine { 0%, 62% { left: -70%; } 100% { left: 140%; } }
+.btn:hover { transform: translateY(-3px); filter: brightness(1.1) saturate(1.1); box-shadow: 0 1px 0 rgba(255, 255, 255, .45) inset, 0 -2px 6px rgba(0, 0, 0, .25) inset, 0 8px 0 var(--em-edge), 0 22px 34px rgba(0, 0, 0, .62), 0 0 40px var(--gold-glow); }
+.btn:hover::after { animation-duration: 1.1s; }
+.btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(255, 255, 255, .25) inset, 0 1px 0 var(--em-edge), 0 6px 12px rgba(0, 0, 0, .6), 0 0 18px var(--gold-glow); }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; filter: grayscale(.5); transform: none; }
+.btn svg { width: 20px; height: 20px; flex: none; }
+.ripple { position: absolute; z-index: 0; border-radius: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; background: rgba(255, 255, 255, .55); transform: scale(0); animation: ripple .6s ease-out forwards; pointer-events: none; }
+@keyframes ripple { to { transform: scale(26); opacity: 0; } }
+.btn.ghost { background:
+    linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, 0) 50%) padding-box,
+    linear-gradient(rgba(9, 22, 17, .82), rgba(9, 22, 17, .82)) padding-box,
+    conic-gradient(from var(--ang), var(--gold), var(--gold-hi) 10%, var(--gold-lo) 24%, var(--gold) 38%, rgba(243, 198, 83, .2) 58%, var(--gold)) border-box;
+  color: var(--gold-soft); box-shadow: 0 1px 0 rgba(255, 255, 255, .12) inset, 0 5px 0 rgba(0, 0, 0, .6), 0 12px 22px rgba(0, 0, 0, .5); }
+.btn.ghost::after { opacity: .35; }
+.btn.small { min-height: 38px; padding: 7px 15px; font-size: .875rem; border-radius: 11px; }
+.btn.nav { width: 100%; justify-content: flex-start; padding-inline: 16px; animation-play-state: paused; }
+.btn.nav:hover, .btn.nav[aria-current="page"] { animation-play-state: running; }
+.btn.nav[aria-current="page"] { filter: brightness(1.2); box-shadow: 0 1px 0 rgba(255, 255, 255, .45) inset, 0 5px 0 var(--em-edge), 0 14px 26px rgba(0, 0, 0, .55), 0 0 38px rgba(243, 198, 83, .55); }
+.btn.nav:not([aria-current="page"]) { background:
+    linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, 0) 50%) padding-box,
+    linear-gradient(rgba(8, 26, 19, .86), rgba(8, 26, 19, .86)) padding-box,
+    conic-gradient(from var(--ang), rgba(243, 198, 83, .6), rgba(255, 243, 196, .5) 12%, rgba(154, 107, 18, .5) 26%, rgba(243, 198, 83, .5) 40%, rgba(243, 198, 83, .14) 60%, rgba(243, 198, 83, .6)) border-box;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, .6), 0 10px 18px rgba(0, 0, 0, .45); }
+.btn.nav .lbl { display: grid; gap: 1px; text-align: left; min-width: 0; } .btn.nav .lbl b { font: inherit; } .btn.nav .lbl small { font-size: .72rem; font-weight: 500; opacity: .72; letter-spacing: .01em; }
+.btn.nav { min-height: 54px; }
+.btn.nav svg { transition: transform .25s; } .btn.nav:hover svg { transform: scale(1.18) rotate(-6deg); }
+.count { margin-left: auto; min-width: 24px; padding: 1px 8px; border-radius: 999px; background: rgba(0, 0, 0, .4); color: var(--gold-soft); font-size: .75rem; text-align: center; }
+.count.hot { background: var(--red); color: #fff; animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 6px rgba(214, 228, 255, 0); transform: scale(1.08); } 0% { box-shadow: 0 0 0 0 rgba(214, 228, 255, .6); } }
+
+/* ===== Стеклянные 3D-панели ===== */
+.glass { position: relative; border-radius: var(--r); background: linear-gradient(155deg, rgba(30, 36, 56, .72), rgba(8, 10, 18, .88) 62%); border: 1px solid rgba(255, 255, 255, .1);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .16) inset, 0 0 0 1px rgba(255, 255, 255, .03) inset, 0 34px 60px -22px rgba(0, 0, 0, .85), 0 0 60px -12px rgba(214, 228, 255, .2); backdrop-filter: blur(10px); }
+.tilt { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .2s ease, box-shadow .2s ease; will-change: transform; }
+.tilt::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .25s; background: radial-gradient(300px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 228, 163, .2), transparent 62%); }
+.tilt:hover::after { opacity: 1; }
+.tilt:hover { box-shadow: 0 1px 0 rgba(255, 255, 255, .2) inset, 0 44px 70px -20px rgba(0, 0, 0, .9), 0 0 70px -8px rgba(214, 228, 255, .32); }
+.sec-head { display: grid; gap: 8px; margin-bottom: 20px; max-width: 62ch; }
+.sec-head p { color: var(--muted); }
+.eyebrow { font: 700 .75rem/1 var(--text); letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+.grid { display: grid; gap: 18px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .g2, .g3, .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.pad { padding: clamp(18px, 3vw, 28px); }
+.page-title { font-size: clamp(1.7rem, 3.6vw, 2.6rem); }
+
+/* ===== Hero и планета ===== */
+.hero { display: grid; gap: 32px; grid-template-columns: 1fr; align-items: center; padding: clamp(24px, 4vw, 52px); overflow: hidden; }
+@media (min-width: 900px) { .hero { grid-template-columns: 1.1fr .9fr; } }
+.hero p.lead { margin-top: 18px; color: var(--muted); font-size: 1.0625rem; max-width: 52ch; }
+.hero .cta { display: flex; flex-direction: column; gap: 14px; margin-top: 28px; max-width: 320px; }
+.stats { display: flex; flex-wrap: wrap; gap: 16px 36px; margin-top: 30px; }
+.stats b { display: block; font: 700 1.75rem/1 var(--display); color: var(--gold-soft); font-variant-numeric: tabular-nums; }
+.stats span { font-size: .8125rem; color: var(--muted); }
+.stage { --ps: clamp(190px, 25vw, 320px); position: relative; width: 100%; aspect-ratio: 1.1; min-height: 300px; display: grid; place-items: center; }
+.stage > * { position: absolute; left: 50%; top: 50%; }
+.halo { width: calc(var(--ps) * 1.9); aspect-ratio: 1; margin: calc(var(--ps) * -.95) 0 0 calc(var(--ps) * -.95); border-radius: 50%; background: radial-gradient(circle, rgba(220, 235, 255, .42), rgba(150, 180, 255, .16) 40%, transparent 68%); animation: breathe 5s ease-in-out infinite; }
+@keyframes breathe { 50% { transform: scale(1.1); opacity: .8; } }
+.planet { width: var(--ps); aspect-ratio: 1; margin: calc(var(--ps) * -.5) 0 0 calc(var(--ps) * -.5); border-radius: 50%; overflow: hidden; z-index: 2; background: #0b1226 var(--tex, none) 0 0 / calc(var(--ps) * 2) 100% repeat-x; animation: rot 120s linear infinite;
+  box-shadow: 0 0 calc(var(--ps) * .22) rgba(200, 225, 255, .55), 0 0 calc(var(--ps) * .6) rgba(150, 185, 255, .3); }
+@keyframes rot { to { background-position: calc(var(--ps) * -2) 0; } }
+.planet::before { content: ""; position: absolute; inset: 0; border-radius: 50%; z-index: 2;
+  background: radial-gradient(circle at 30% 26%, rgba(255, 255, 255, .34), rgba(255, 255, 255, 0) 30%), radial-gradient(circle at 36% 34%, rgba(0, 0, 0, 0) 38%, rgba(0, 0, 0, .55) 72%, rgba(0, 0, 0, .94) 100%); }
+.planet::after { content: ""; position: absolute; inset: 0; border-radius: 50%; z-index: 3; box-shadow: inset 0 0 calc(var(--ps) * .09) rgba(210, 232, 255, .6), inset calc(var(--ps) * -.03) calc(var(--ps) * -.03) calc(var(--ps) * .14) rgba(120, 160, 255, .35); }
+.rshadow { position: absolute; z-index: 1; left: 50%; top: 56%; width: 190%; height: 54%; margin-left: -95%; transform: rotate(-16deg); background: radial-gradient(closest-side, transparent 62%, rgba(0, 0, 0, .5) 68% 90%, transparent 97%); }
+.ring { z-index: 1; width: calc(var(--ps) * 2); height: calc(var(--ps) * .58); margin: calc(var(--ps) * -.29) 0 0 calc(var(--ps) * -1); transform: rotate(-16deg); border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, transparent 0 63%, rgba(120, 82, 20, .35) 63% 66%, rgba(243, 198, 83, .92) 66% 72%, rgba(255, 243, 196, .95) 72% 74%, rgba(154, 107, 18, .6) 74% 79%, rgba(243, 198, 83, .78) 79% 86%, rgba(154, 107, 18, .35) 86% 92%, transparent 94%);
+  filter: drop-shadow(0 0 10px rgba(243, 198, 83, .5)); }
+.ring.back { clip-path: inset(0 0 50% 0); z-index: 1; }
+.ring.front { clip-path: inset(50% 0 0 0); z-index: 4; }
+.sat { width: calc(var(--ps) * .085); aspect-ratio: 1; margin: calc(var(--ps) * -.0425) 0 0 calc(var(--ps) * -.0425); border-radius: 50%; background: radial-gradient(circle at 32% 28%, #b8ffe3, #17b27a 48%, #04432a); box-shadow: 0 0 18px rgba(30, 220, 150, .8); }
+.sat.back { z-index: 1; } .sat.front { z-index: 5; }
+.spark { width: 6px; height: 6px; border-radius: 50%; background: #fff; box-shadow: 0 0 12px 3px rgba(255, 255, 255, .8); animation: twinkle 3s ease-in-out infinite; z-index: 6; }
+.spark:nth-of-type(1) { left: 12%; top: 18%; } .spark:nth-of-type(2) { left: 88%; top: 30%; animation-delay: 1s; } .spark:nth-of-type(3) { left: 78%; top: 86%; animation-delay: 2s; }
+@keyframes twinkle { 50% { transform: scale(.3); opacity: .3; } }
+
+/* ===== Карточки объявлений ===== */
+.ad { display: grid; gap: 12px; padding: 18px; align-content: start; min-width: 0; }
+.ad h3 { overflow-wrap: anywhere; }
+.cover { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 12px; border: 1px solid var(--line); background: #1a0a0f; transition: transform .5s ease; }
+.ad:hover .cover { transform: scale(1.025); }
+.coverbox { overflow: hidden; border-radius: 12px; }
+.ad .desc { color: var(--muted); font-size: .9375rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge { padding: 3px 10px; border-radius: 999px; font-size: .75rem; font-weight: 700; border: 1px solid var(--line); color: var(--muted); background: rgba(255, 255, 255, .04); }
+.badge.red { color: var(--ink); background: rgba(255, 90, 100, .22); border-color: rgba(214, 228, 255, .5); }
+.badge.gold { color: #1b1203; background: linear-gradient(135deg, var(--gold-hi), var(--gold)); border-color: transparent; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tags span { font-size: .8125rem; color: var(--gold-soft); }
+.tags span::before { content: "#"; opacity: .6; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .875rem; color: var(--muted); }
+.price { font: 700 1.125rem/1.2 var(--text); color: var(--gold-soft); }
+.ad-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--line); }
+.author { font-weight: 700; font-size: .9375rem; overflow-wrap: anywhere; }
+.fav { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 11px; border: 1px solid var(--line); background: rgba(255, 255, 255, .04); cursor: pointer; color: var(--muted); transition: transform .15s, color .15s; }
+.fav:hover { transform: scale(1.1); }
+.fav svg { width: 20px; height: 20px; }
+.fav[aria-pressed="true"] { color: var(--red); border-color: rgba(214, 228, 255, .6); background: rgba(214, 228, 255, .14); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* ===== Фильтры и формы ===== */
+.filters { display: grid; gap: 16px; padding: 20px; }
+.filters .line { display: grid; gap: 12px; grid-template-columns: 1fr; }
+@media (min-width: 760px) { .filters .line { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); } .filters .line > label:first-child { grid-column: span 2; } }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, .04); cursor: pointer; font-weight: 600; font-size: .875rem; transition: transform .15s, background .15s; }
+.chip:hover { transform: translateY(-2px); }
+.chip[aria-pressed="true"] { color: #1b1203; background: linear-gradient(135deg, var(--gold-hi), var(--gold)); border-color: transparent; }
+.check { display: flex; align-items: flex-start; gap: 10px; min-width: 0; font-size: .9375rem; cursor: pointer; }
+.check input { width: 18px; height: 18px; accent-color: var(--em-hi); }
+.field { display: grid; gap: 6px; font-size: .875rem; font-weight: 700; min-width: 0; }
+.field .hint { font-weight: 500; color: var(--muted); font-size: .8125rem; }
+.field input, .field select, .field textarea { width: 100%; min-height: 46px; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: rgba(0, 0, 0, .5); font-weight: 500; font-size: 1rem; box-shadow: 0 2px 6px rgba(0, 0, 0, .5) inset; transition: border-color .15s, box-shadow .15s; }
+.field textarea { min-height: 140px; resize: vertical; }
+.field input::placeholder, .field textarea::placeholder { color: #85767b; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--gold); outline-offset: 1px; border-color: transparent; box-shadow: 0 0 22px var(--gold-glow); }
+.field.bad input, .field.bad select, .field.bad textarea { border-color: var(--err); }
+.err { min-height: 1.2em; color: var(--err); font-size: .8125rem; font-weight: 600; }
+.form-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .form-grid.two { grid-template-columns: 1fr 1fr; } }
+.form-layout { display: grid; gap: 24px; grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 1100px) { .form-layout { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); } .preview { position: sticky; top: 24px; } }
+fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: grid; gap: 16px; }
+legend { padding: 0; margin-bottom: 4px; font: 700 .75rem/1 var(--text); letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+.status { min-height: 1.4em; font-weight: 600; }
+.status.ok { color: var(--ok); }
+.thumbs { display: flex; flex-wrap: wrap; gap: 12px; }
+.thumb { position: relative; width: 104px; }
+.thumb img { width: 104px; height: 70px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); display: block; }
+.thumb button { position: absolute; top: -8px; right: -8px; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--gold-line, #8a6d2a); background: #1a0a0f; color: var(--gold-soft); cursor: pointer; line-height: 1; }
+.upload { display: grid; gap: 8px; }
+
+/* ===== Дизайнеры, шаги, правила ===== */
+.des { display: grid; gap: 12px; padding: 20px; align-content: start; }
+.des h3 { overflow-wrap: anywhere; }
+.coin { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font: 800 1.1rem/1 var(--display); color: #1b1203; background: radial-gradient(circle at 32% 28%, var(--gold-hi), var(--gold) 55%, var(--gold-lo)); box-shadow: 0 6px 0 #5a3b06, 0 14px 22px rgba(0, 0, 0, .6), 0 0 22px var(--gold-glow); }
+.steps { counter-reset: s; }
+.steps li { counter-increment: s; display: grid; gap: 8px; padding: 22px; align-content: start; }
+.steps li::before { content: counter(s); width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: linear-gradient(135deg, var(--gold-hi), var(--gold)); color: #1b1203; font: 700 1rem/1 var(--display); box-shadow: 0 5px 0 #5a3b06, 0 0 22px var(--gold-glow); }
+.steps p { color: var(--muted); font-size: .9375rem; }
+.cat { display: grid; gap: 10px; padding: 20px; cursor: pointer; text-align: left; border: 1px solid rgba(255, 255, 255, .1); font: inherit; color: inherit; width: 100%; }
+.cat b { font-size: 1rem; }
+.cat span { font-size: .8125rem; color: var(--muted); }
+.cat svg { width: 30px; height: 30px; color: var(--gold); transition: transform .3s; }
+.cat:hover svg { transform: translateY(-4px) rotate(-8deg) scale(1.1); }
+.free { display: flex; flex-wrap: wrap; gap: 14px; }
+.free > div { flex: 1 1 220px; padding: 18px 20px; display: grid; gap: 4px; }
+.free b { color: var(--gold-soft); font: 700 1.05rem/1.2 var(--display); }
+.free span { color: var(--muted); font-size: .9rem; }
+.rules { display: grid; gap: 14px; max-width: 72ch; }
+.rules li { padding-left: 26px; position: relative; color: var(--ink); }
+.rules li::before { content: ""; position: absolute; left: 2px; top: .55em; width: 10px; height: 6px; border-left: 2px solid var(--ok); border-bottom: 2px solid var(--ok); transform: rotate(-45deg); }
+.rules.no li::before { border: 0; width: 12px; height: 2px; background: var(--err); transform: none; top: .8em; }
+details.faq { border-bottom: 1px solid var(--line); }
+details.faq summary { cursor: pointer; list-style: none; padding: 16px 36px 16px 0; position: relative; font-weight: 700; }
+details.faq summary::-webkit-details-marker { display: none; }
+details.faq summary::after { content: "+"; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; color: var(--gold); transition: transform .25s; }
+details.faq[open] summary::after { content: "\2212"; }
+details.faq p { padding: 0 0 16px; color: var(--muted); max-width: 70ch; }
+.empty { display: grid; gap: 12px; justify-items: start; padding: 28px; }
+.contact-card { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; padding: 16px 18px; }
+.contact-card b { display: block; font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
+.contact-card span.val { font-weight: 700; overflow-wrap: anywhere; user-select: all; }
+
+/* ===== Чат ===== */
+.chat { display: grid; grid-template-columns: 320px minmax(0, 1fr); min-height: 560px; height: min(72vh, 720px); overflow: hidden; padding: 0; }
+.clist { border-right: 1px solid var(--line); overflow-y: auto; display: grid; align-content: start; }
+.citem { display: grid; gap: 4px; padding: 14px 16px; border: 0; border-bottom: 1px solid var(--line); background: transparent; text-align: left; cursor: pointer; width: 100%; transition: background .15s; }
+.citem:hover { background: rgba(255, 255, 255, .04); }
+.citem[aria-current="true"] { background: rgba(243, 198, 83, .1); box-shadow: inset 3px 0 0 var(--gold); }
+.citem b { display: flex; justify-content: space-between; gap: 8px; }
+.citem small { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cthread { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-width: 0; }
+.chead { padding: 14px 18px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.chead h3 { font-size: 1rem; }
+.cmsgs { overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.msg { max-width: min(78%, 520px); padding: 10px 14px; border-radius: 16px; overflow-wrap: anywhere; white-space: pre-wrap; animation: pop .25s ease both; }
+.msg.me { align-self: flex-end; background: linear-gradient(180deg, var(--em-hi), var(--em-lo)); border-bottom-right-radius: 4px; box-shadow: 0 6px 14px rgba(0, 0, 0, .45), 0 0 14px rgba(27, 196, 135, .25); }
+.msg.peer { align-self: flex-start; background: rgba(255, 255, 255, .08); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.msg small { display: block; margin-top: 4px; font-size: .6875rem; opacity: .7; }
+.cform { display: flex; gap: 10px; padding: 12px 14px; border-top: 1px solid var(--line); align-items: flex-end; }
+.cform textarea { flex: 1; min-height: 46px; max-height: 140px; resize: none; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: rgba(0, 0, 0, .5); }
+.cnote { padding: 8px 18px; font-size: .75rem; color: var(--muted); border-bottom: 1px solid var(--line); }
+.back-btn { display: none; }
+@media (max-width: 900px) {
+  .chat { grid-template-columns: 1fr; height: min(78vh, 760px); }
+  .chat .cthread { display: none; }
+  .chat.show-thread .clist { display: none; }
+  .chat.show-thread .cthread { display: grid; }
+  .back-btn { display: inline-flex; }
+}
+
+/* ===== Окно ===== */
+.modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(1, 2, 8, .8); backdrop-filter: blur(5px); animation: fade .2s ease both; }
+@keyframes fade { from { opacity: 0; } }
+.modal[hidden] { display: none; }
+.modal-card { width: min(700px, 100%); max-height: calc(100vh - 32px); overflow: auto; padding: clamp(20px, 4vw, 32px); display: grid; gap: 16px; background: #0b0e19; animation: pop .3s cubic-bezier(.2, .8, .2, 1) both; position: relative; }
+@keyframes pop { from { opacity: 0; transform: perspective(900px) translateY(18px) rotateX(10deg) scale(.97); } to { opacity: 1; transform: none; } }
+.modal-close { position: absolute; top: 12px; right: 12px; z-index: 3; }
+.modal h2 { padding-right: 96px; overflow-wrap: anywhere; font-size: clamp(1.25rem, 3vw, 1.6rem); }
+.modal .full { white-space: pre-wrap; overflow-wrap: anywhere; }
+.gallery { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.gallery img { width: 100%; border-radius: 12px; border: 1px solid var(--line); display: block; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 60; max-width: min(520px, calc(100vw - 32px)); padding: 12px 18px; border-radius: 14px; background: #0e2a1f; border: 1px solid rgba(243, 198, 83, .55); box-shadow: 0 12px 30px rgba(0, 0, 0, .6), 0 0 24px var(--gold-glow); font-weight: 700; animation: pop .25s ease both; }
+.toast[hidden] { display: none; }
+footer.site { color: var(--muted); font-size: .875rem; display: grid; gap: 14px; padding-top: 24px; border-top: 1px solid var(--line); }
+footer.site .brand { margin-bottom: 4px; }
+
+/* ===== Телефон и планшет ===== */
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; padding: 10px var(--gutter); background: rgba(4, 6, 12, .93); border-bottom: 1px solid var(--line); backdrop-filter: blur(10px); }
+  .topbar .logo3d { width: 42px; height: 42px; }
+  .topbar .word { font-size: 1.05rem; }
+  .rail { display: none; position: fixed; z-index: 19; left: 0; right: 0; top: calc(66px + env(safe-area-inset-top, 0px)); bottom: 0; height: auto; width: auto; padding: 20px var(--gutter) 32px; border: 0; background: rgba(3, 5, 10, .97); }
+  .rail.open { display: flex; }
+  .rail .brand { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  .grain { display: none; }
+}
+
+.info { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.gauge { position: relative; display: grid; justify-items: center; gap: 6px; padding: 20px 14px 18px; text-align: center; }
+.gauge svg { width: 112px; height: 112px; transform: rotate(-90deg); filter: drop-shadow(0 0 10px rgba(243,198,83,.45)); }
+.g-bg { fill: none; stroke: rgba(255,255,255,.08); stroke-width: 8; }
+.g-fg { fill: none; stroke: url(#lgG); stroke: var(--gold); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; animation: gdraw 1.6s .2s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes gdraw { to { stroke-dashoffset: calc(100 - var(--v)); } }
+.gauge b { position: absolute; top: 20px; height: 112px; display: grid; place-items: center; color: var(--gold-soft); font: 700 1.2rem/1 var(--display); }
+.gauge span { margin-top: 2px; color: var(--muted); font-size: .86rem; line-height: 1.4; }
+.cat .bar { display: block; height: 6px; margin-top: 10px; border-radius: 6px; background: rgba(255,255,255,.08); overflow: hidden; position: relative; }
+.cat .bar::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); min-width: 6px; border-radius: 6px; background: linear-gradient(90deg, var(--em, #1fbf86), var(--gold)); box-shadow: 0 0 12px var(--gold-glow); animation: bgrow 1.2s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes bgrow { from { width: 0; } }
+.flow { position: relative; }
+.flow li { position: relative; }
+.flow li::after { content: ""; position: absolute; z-index: 1; pointer-events: none; background: linear-gradient(90deg, transparent, var(--gold), transparent); background-size: 200% 100%; animation: flowrun 2.4s linear infinite; }
+@media (min-width: 981px) { .flow li:not(:last-child)::after { top: 40px; right: -14px; width: 14px; height: 3px; } }
+@media (max-width: 980px) { .info { grid-template-columns: repeat(2, 1fr); } .flow li:not(:last-child)::after { left: 41px; bottom: -14px; width: 3px; height: 14px; background: linear-gradient(180deg, transparent, var(--gold), transparent); background-size: 100% 200%; } }
+@keyframes flowrun { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .g-fg { animation: none; stroke-dashoffset: calc(100 - var(--v)); } .flow li::after { animation: none; } }
+
+.cat { --c: hsl(var(--hue) 85% 62%); align-content: start; position: relative; overflow: hidden; }
+.cat::before { content: ""; position: absolute; width: 140px; height: 140px; right: -40px; top: -50px; border-radius: 50%; background: radial-gradient(circle, hsl(var(--hue) 90% 55% / .35), transparent 70%); transition: transform .5s; }
+.cat:hover::before { transform: scale(1.5); }
+.cat .disc { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 16px; position: relative; background: linear-gradient(145deg, hsl(var(--hue) 80% 28%), hsl(var(--hue) 70% 12%)); border: 1px solid hsl(var(--hue) 80% 55% / .6); box-shadow: 0 5px 0 hsl(var(--hue) 70% 8%), 0 0 24px hsl(var(--hue) 90% 55% / .45); }
+.cat .disc svg { color: var(--c); }
+.cat .kit { display: flex; flex-wrap: wrap; gap: 6px; }
+.cat .kit em { font-style: normal; font-size: .72rem; padding: 3px 9px; border-radius: 99px; color: var(--c); border: 1px solid hsl(var(--hue) 80% 60% / .4); background: hsl(var(--hue) 80% 50% / .1); }
+.cat .cnt { font-size: .8125rem; color: var(--muted); } .cat .cnt strong { color: var(--c); font: 700 1.1rem var(--display); }
+.cat .bar::after { background: linear-gradient(90deg, hsl(var(--hue) 80% 45%), var(--c)); box-shadow: 0 0 12px hsl(var(--hue) 90% 55% / .6); }
+
+.errsum { padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,138,150,.5); background: rgba(255,90,100,.1); color: var(--err); font-size: .9rem; }
+.errsum ul { margin: 6px 0 0; padding-left: 18px; list-style: disc; }
+.about { display: grid; gap: 12px; max-width: 100%; padding: 28px; } .about p:not(.eyebrow) { color: var(--muted); max-width: 78ch; }
+.legal { display: grid; gap: 10px; max-width: 80ch; } .legal h2 { font-size: 1.1rem; margin-top: 10px; } .legal p { color: var(--muted); }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.savednote { border-color: rgba(93,226,168,.5); color: var(--ok); } .savednote b { color: var(--ink); }
+.status.err-on, .status.bad { color: var(--err); }
+</style>
+
+<noscript><style>.page,.page[hidden]{display:none!important}.page[data-page=home]{display:block!important}body:has(.page:target:not(#home)) .page[data-page=home]{display:none!important}.page:target,.page[hidden]:target{display:block!important}@media(max-width:980px){.rail{display:flex!important;position:static!important;height:auto!important;width:auto!important;transform:none!important;border:0}.topbar #menuBtn{display:none}}</style></noscript><noscript><div style="position:relative;z-index:5;padding:24px;background:#0b0e19;color:#f8f0f2">Для работы сайта нужен JavaScript. Включите его в настройках браузера.</div></noscript>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <radialGradient id="lgP" cx="34%" cy="28%" r="82%"><stop offset="0" stop-color="#ffffff"/><stop offset=".16" stop-color="#cfe0ff"/><stop offset=".52" stop-color="#5c7fc9"/><stop offset="1" stop-color="#0a1233"/></radialGradient>
+    <linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".45" stop-color="#f3c653"/><stop offset="1" stop-color="#9a6b12"/></linearGradient>
+    <radialGradient id="lgE" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#b8ffe3"/><stop offset=".5" stop-color="#17b27a"/><stop offset="1" stop-color="#04432a"/></radialGradient>
+    <radialGradient id="lgLimb" cx="38%" cy="34%" r="70%"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+    <clipPath id="lgPlanet"><circle cx="60" cy="62" r="28"/></clipPath>
+    <clipPath id="lgBackHalf"><rect x="-10" y="-10" width="140" height="72"/></clipPath>
+    <clipPath id="lgFrontHalf"><rect x="-10" y="62" width="140" height="80"/></clipPath>
+    <filter id="lgBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2"/></filter>
+  </defs>
+</svg>
+<div class="space" aria-hidden="true"><i></i><i></i><i></i></div>
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="topbar">
+  <a class="brand" href="#home" aria-label="Орбита Дизайн, на главную"><span data-logo></span><span><span class="word">ОРБИТА</span></span></a>
+  <button class="btn small" id="menuBtn" type="button" aria-expanded="false" aria-controls="rail">Меню</button>
+</div>
+
+<div class="shell">
+  <aside class="rail" id="rail" aria-label="Разделы сайта">
+    <a class="brand" href="#home" aria-label="Орбита Дизайн, на главную"><span data-logo></span><span><span class="word">ОРБИТА</span><small>ДИЗАЙН</small></span></a>
+    <nav class="menu" id="menu" aria-label="Главное меню"><a class="btn nav" href="#home">Главная</a><a class="btn nav" href="#ads">Объявления</a><a class="btn nav" href="#designers">Дизайнеры</a><a class="btn nav" href="#post">Подать объявление</a><a class="btn nav" href="#saved">Избранное и мои</a><a class="btn nav" href="#rules">Правила и вопросы</a><a class="btn nav" href="#contacts">Контакты</a><a class="btn nav" href="#privacy">Конфиденциальность</a></nav>
+    <div class="rail-foot"><span id="modeNote"></span></div>
+  </aside>
+
+  <main id="main">
+    <!-- ============ ГЛАВНАЯ ============ -->
+    <section class="page" id="home" data-page="home" aria-labelledby="h-home">
+      <div class="glass hero">
+        <div>
+          <p class="eyebrow">Бесплатная площадка для дизайнеров</p>
+          <h1 id="h-home" style="margin-top:14px">Ваши услуги заметят <span class="gold-text">в первой же орбите</span></h1>
+          <p class="lead">Разместите объявление о своих услугах бесплатно, добавьте телефон, Telegram или e-mail и получайте обращения от заказчиков напрямую. Без регистрации, комиссий и посредников.</p>
+          <div class="cta">
+            <a class="btn" href="#post">Подать объявление</a>
+            <a class="btn ghost" href="#ads">Смотреть объявления</a>
+            <a class="btn ghost" href="#designers">Найти дизайнера</a>
+          </div>
+          <div class="stats" id="stats"></div>
+        </div>
+        <div class="stage" id="stage" aria-hidden="true">
+          <div class="halo"></div>
+          <div class="ring back"></div>
+          <i class="sat back" id="satB"></i>
+          <div class="planet" id="planet"><div class="rshadow"></div></div>
+          <div class="ring front"></div>
+          <i class="sat front" id="satF"></i>
+          <span class="spark"></span><span class="spark"></span><span class="spark"></span>
+        </div>
+      </div>
+
+      <section class="info" aria-label="Площадка в цифрах">
+        <div class="gauge glass tilt"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="g-bg" cx="60" cy="60" r="50"/><circle class="g-fg" cx="60" cy="60" r="50" pathLength="100" style="--v:100"/></svg><b>0 ₽</b><span>комиссия и плата за размещение</span></div>
+        <div class="gauge glass tilt"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="g-bg" cx="60" cy="60" r="50"/><circle class="g-fg" cx="60" cy="60" r="50" pathLength="100" style="--v:100"/></svg><b>30 дней</b><span>живёт объявление, затем продлевается</span></div>
+        <div class="gauge glass tilt"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="g-bg" cx="60" cy="60" r="50"/><circle class="g-fg" cx="60" cy="60" r="50" pathLength="100" style="--v:75"/></svg><b>3 фото</b><span>примеры работ в каждом объявлении</span></div>
+        <div class="gauge glass tilt"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="g-bg" cx="60" cy="60" r="50"/><circle class="g-fg" cx="60" cy="60" r="50" pathLength="100" style="--v:88"/></svg><b>Напрямую</b><span>телефон, Telegram и e-mail автора открыты</span></div>
+      </section>
+
+      <section class="glass pad about" aria-labelledby="h-about">
+        <p class="eyebrow">О сайте</p>
+        <h2 id="h-about">Орбита Дизайн — бесплатная доска объявлений для дизайнеров</h2>
+        <p>Здесь дизайнеры, студии и иллюстраторы рассказывают о своих услугах, а заказчики находят исполнителей: для логотипа и фирменного стиля, сайта и интерфейсов, полиграфии, упаковки, иллюстраций, 3D, соцсетей и инфографики.</p>
+        <p>На площадке нет комиссий, посредников и платежей. В объявлении вы указываете цену, примеры работ и свои контакты, и заказчик связывается с вами напрямую. Регистрация и привязка мессенджеров не нужны.</p>
+      </section>
+
+      <section aria-labelledby="h-cats">
+        <div class="sec-head"><p class="eyebrow">Направления</p><h2 id="h-cats">Выберите, что нужно</h2></div>
+        <div class="grid g4" id="homeCats"></div>
+      </section>
+
+      <section aria-labelledby="h-feat">
+        <div class="sec-head"><p class="eyebrow">Витрина</p><h2 id="h-feat">Свежие объявления</h2></div>
+        <div class="grid g3" id="homeFeatured"></div>
+        <div class="row" style="margin-top:22px"><a class="btn" href="#ads">Все объявления</a></div>
+      </section>
+
+      <section aria-labelledby="h-how">
+        <div class="sec-head"><p class="eyebrow">Как это работает</p><h2 id="h-how">От объявления до договорённости</h2></div>
+        <ol class="grid g4 steps flow">
+          <li class="glass tilt"><h3>Заполните форму</h3><p>Опишите услугу, добавьте работы и контакты. Это бесплатно.</p></li>
+          <li class="glass tilt"><h3>Отправьте на проверку</h3><p>Нажмите «Отправить на публикацию»: письмо уйдёт владельцу площадки.</p></li>
+          <li class="glass tilt"><h3>Объявление в каталоге</h3><p>После проверки его увидят все посетители сайта.</p></li>
+          <li class="glass tilt"><h3>Работайте напрямую</h3><p>Заказчик звонит или пишет вам. Условия вы обсуждаете сами.</p></li>
+        </ol>
+      </section>
+    </section>
+
+    <!-- ============ ОБЪЯВЛЕНИЯ ============ -->
+    <section class="page" id="ads" data-page="ads" aria-labelledby="h-ads" hidden>
+      <div class="sec-head"><p class="eyebrow">Каталог</p><h1 id="h-ads" class="page-title">Объявления дизайнеров</h1><p>Ищите по названию, навыкам и имени, фильтруйте по направлению, городу и бюджету.</p></div>
+      <div class="glass filters">
+        <div class="line">
+          <label class="field">Поиск<input id="fq" type="search" placeholder="Например: логотип, лендинг, упаковка" autocomplete="off"></label>
+          <label class="field">Формат работы<select id="ffmt"><option value="">Любой</option><option value="remote">Удалённо</option><option value="city">В городе</option></select></label>
+          <label class="field">Город<input id="fcity" type="search" placeholder="Любой" autocomplete="off"></label>
+          <label class="field">Бюджет до, ₽<input id="fbud" type="number" min="0" step="1000" inputmode="numeric" placeholder="Любой"></label>
+          <label class="field">Сортировка<select id="fsort"><option value="new">Сначала новые</option><option value="pa">Дешевле</option><option value="pd">Дороже</option></select></label>
+        </div>
+        <div class="chips" id="fcats" role="group" aria-label="Направление"></div>
+        <div class="row" style="justify-content:space-between">
+          <label class="check"><input type="checkbox" id="ffav"> Только избранные</label>
+          <div class="row"><span class="muted" id="fcount" role="status" aria-live="polite"></span><button class="btn ghost small" id="freset" type="button">Сбросить</button></div>
+        </div>
+      </div>
+      <div class="grid g3" id="adsList"></div>
+      <div class="row" id="moreRow" style="justify-content:center"><button class="btn" id="moreBtn" type="button">Показать ещё</button></div>
+    </section>
+
+    <!-- ============ ДИЗАЙНЕРЫ ============ -->
+    <section class="page" id="designers" data-page="designers" aria-labelledby="h-des" hidden>
+      <div class="sec-head"><p class="eyebrow">Специалисты</p><h1 id="h-des" class="page-title">Дизайнеры на Орбите</h1><p>Все, кто разместил объявления. Откройте профиль, чтобы увидеть услуги и контакты.</p></div>
+      <div class="glass filters"><label class="field">Поиск по имени, городу или направлению<input id="dq" type="search" placeholder="Имя, город или направление" autocomplete="off"></label></div>
+      <div class="grid g3" id="desList"></div>
+    </section>
+
+    <!-- ============ ПОДАТЬ ОБЪЯВЛЕНИЕ ============ -->
+    <section class="page" id="post" data-page="post" aria-labelledby="h-post" hidden>
+      <div class="sec-head"><p class="eyebrow" id="postEyebrow">Новое объявление</p><h1 id="h-post" class="page-title">Подать объявление</h1><p id="postIntro">Размещение бесплатное, объявление показывается 30 дней и его можно продлить. Обязательны заголовок, описание, имя и хотя бы один контакт (телефон, Telegram или e-mail). Направление указывать необязательно.</p><div class="errsum" id="blockNote" role="alert" hidden></div></div>
+      <div class="form-layout">
+        <form class="glass pad" id="postForm" novalidate>
+          <div style="display:grid;gap:28px">
+            <fieldset>
+              <legend>Услуга</legend>
+              <label class="field" id="w-title">Заголовок<input id="p-title" maxlength="80" placeholder="Например: Логотип и фирменный стиль под ключ" autocomplete="off"><span class="err" id="e-title"></span></label>
+              <div class="form-grid two">
+                <label class="field" id="w-cat">Направление (необязательно)<select id="p-cat"><option value="">Без категории</option></select></label>
+                <label class="field" id="w-fmt">Формат<select id="p-fmt"><option value="remote">Удалённо</option><option value="city">В городе</option><option value="both">Удалённо и в городе</option></select></label>
+              </div>
+              <label class="field" id="w-city" hidden>Город<input id="p-city" maxlength="40" placeholder="Например: Екатеринбург" autocomplete="address-level2"><span class="err" id="e-city"></span></label>
+              <label class="field" id="w-desc">Описание<textarea id="p-desc" maxlength="1000" placeholder="Что входит в услугу, что получит клиент, примеры задач"></textarea><span class="hint"><span id="p-count">0</span> / 1000</span><span class="err" id="e-desc"></span></label>
+              <div class="form-grid two">
+                <label class="field" id="w-price">Цена от, ₽<input id="p-price" type="number" min="0" step="100" inputmode="numeric" placeholder="Пусто = договорная"><span class="err" id="e-price"></span></label>
+                <label class="field" id="w-ptype">Цена за<select id="p-ptype"><option value="project">Проект</option><option value="hour">Час</option><option value="deal">По договорённости</option></select></label>
+              </div>
+              <label class="field" id="w-tags">Навыки через запятую<input id="p-tags" maxlength="120" placeholder="логотип, брендбук, Figma" autocomplete="off"><span class="hint">До 5 навыков</span></label>
+            </fieldset>
+            <fieldset>
+              <legend>Примеры работ</legend>
+              <div class="upload">
+                <label class="btn ghost small" style="justify-self:start;cursor:pointer"><input type="file" id="p-img" accept="image/*" multiple hidden><span>Добавить фото (до 3)</span></label>
+                <div class="thumbs" id="thumbs"></div>
+                <span class="hint muted" style="font-size:.8125rem">Фото автоматически уменьшаются. Первое показывается на карточке.</span>
+                <span class="err" id="e-img"></span>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Контакты</legend>
+              <label class="field" id="w-name">Ваше имя или студия<input id="p-name" maxlength="50" placeholder="Как к вам обращаться" autocomplete="name"><span class="err" id="e-name"></span></label>
+              <div class="form-grid two">
+                <label class="field" id="w-phone">Телефон<input id="p-phone" type="tel" maxlength="24" placeholder="+7 900 123-45-67" autocomplete="tel"><span class="err" id="e-phone"></span></label>
+                <label class="field" id="w-tg">Telegram<input id="p-tg" maxlength="40" placeholder="@username" autocomplete="off"><span class="err" id="e-tg"></span></label>
+              </div>
+              <div class="form-grid two">
+                <label class="field" id="w-email">E-mail<input id="p-email" type="email" maxlength="80" placeholder="name@example.com" autocomplete="email"><span class="err" id="e-email"></span></label>
+                <label class="field" id="w-port">Портфолио (необязательно)<input id="p-port" type="url" maxlength="200" placeholder="https://" autocomplete="url"><span class="err" id="e-port"></span></label>
+              </div>
+              <span class="err" id="e-contact"></span>
+            </fieldset>
+            <div style="display:grid;gap:14px">
+              <label class="check"><input type="checkbox" id="p-ok"><span>Я согласен на публикацию моих контактов в объявлении и принимаю <a href="#privacy">политику конфиденциальности</a> и <a href="#terms">условия использования</a></span></label>
+              <span class="err" id="e-ok"></span><div class="errsum" id="errsum" role="alert" hidden></div>
+              <div class="row"><button class="btn" type="button" id="p-submit">Сохранить объявление</button><button class="btn ghost" type="button" id="p-clear">Очистить</button><button class="btn ghost" type="button" id="p-cancel" hidden>Отменить изменения</button></div>
+              <p class="status" id="p-status" role="status" aria-live="polite"></p>
+            </div>
+          </div>
+        </form>
+        <aside class="preview" aria-label="Предпросмотр объявления">
+          <p class="eyebrow" style="margin-bottom:12px">Так увидят клиенты</p>
+          <div id="preview"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ ИЗБРАННОЕ И МОИ ============ -->
+    <section class="page" id="saved" data-page="saved" aria-labelledby="h-saved" hidden>
+      <div class="sec-head"><p class="eyebrow">Личное</p><h1 id="h-saved" class="page-title">Избранное и мои объявления</h1></div>
+      <div class="glass pad savednote" id="savedNote" role="status" hidden></div>
+      <section aria-labelledby="h-my">
+        <div class="sec-head"><h2 id="h-my">Мои объявления</h2></div>
+        <div class="grid g3" id="myList"></div>
+      </section>
+      <section aria-labelledby="h-fav">
+        <div class="sec-head"><h2 id="h-fav">Избранное</h2></div>
+        <div class="grid g3" id="favList"></div>
+      </section>
+      <section class="glass pad" id="keyBox" aria-labelledby="h-key" hidden>
+        <h2 id="h-key" style="font-size:1.2rem;margin-bottom:8px">Ключ владельца объявлений</h2>
+        <p class="muted" style="margin-bottom:14px">Ваши объявления привязаны к этому браузеру. Сохраните ключ, чтобы редактировать их с другого телефона или после очистки данных браузера. Никому его не показывайте: по ключу объявления можно изменить или удалить.</p>
+        <div class="row" style="margin-bottom:16px"><button class="btn ghost small" type="button" id="keyCopy">Скопировать ключ</button></div>
+        <label class="field" style="max-width:560px">Восстановить доступ по ключу<input id="keyIn" autocomplete="off" placeholder="Вставьте ключ"></label>
+        <div class="row" style="margin-top:12px"><button class="btn small" type="button" id="keyApply">Восстановить</button></div>
+        <p class="status" id="keyStatus" role="status" aria-live="polite"></p>
+      </section>
+    </section>
+
+    <!-- ============ ПРАВИЛА ============ -->
+    <section class="page" id="rules" data-page="rules" aria-labelledby="h-rules" hidden>
+      <div class="sec-head"><p class="eyebrow">Правила площадки</p><h1 id="h-rules" class="page-title">Правила и вопросы</h1><p>Площадка бесплатная. Мы не берём комиссию и не участвуем в расчётах между заказчиком и дизайнером.</p></div>
+      <div class="grid g2">
+        <div class="glass pad"><h2 style="font-size:1.2rem;margin-bottom:14px">Можно</h2>
+          <ul class="rules"><li>Размещать объявления о своих услугах и своих работах.</li><li>Указывать реальные контакты: телефон, Telegram, e-mail.</li><li>Связываться с автором напрямую и обсуждать задачу.</li><li>Продлевать объявление, когда срок заканчивается.</li></ul></div>
+        <div class="glass pad"><h2 style="font-size:1.2rem;margin-bottom:14px">Нельзя</h2>
+          <ul class="rules no"><li>Выдавать чужие работы за свои.</li><li>Размещать спам, обман и ссылки на сторонние сервисы вместо услуги.</li><li>Просить предоплату на личную карту без договорённости об условиях.</li><li>Публиковать чужие персональные данные.</li></ul></div>
+      </div>
+      <div class="glass pad">
+        <h2 style="font-size:1.2rem;margin-bottom:6px">Частые вопросы</h2>
+        <details class="faq"><summary>Сколько стоит размещение?</summary><p>Ничего. Размещение бесплатное, без комиссий и скрытых платежей.</p></details>
+        <details class="faq"><summary>Нужна ли регистрация?</summary><p>Нет. Не нужны ни вход через мессенджеры, ни оплата, ни аккаунт. Достаточно заполнить форму.</p></details>
+        <details class="faq"><summary>Как моё объявление увидят все?</summary><p id="faq-vis"></p></details>
+        <details class="faq"><summary>Сколько показывается объявление?</summary><p>30 дней. Потом оно скрывается из каталога, но остаётся в разделе «Избранное и мои», где его можно продлить кнопкой «Продлить» ещё на 30 дней.</p></details>
+        <details class="faq"><summary>Как изменить или удалить объявление?</summary><p id="faq-edit"></p></details>
+        <details class="faq"><summary>Как редактировать объявление с другого телефона или после очистки браузера?</summary><p id="faq-key"></p></details>
+        <details class="faq"><summary>Можно ли добавить фото?</summary><p>Да, до трёх фото на объявление. Они автоматически уменьшаются. Первое показывается на карточке.</p></details>
+        <details class="faq"><summary>Как связаться с автором объявления?</summary><p>Нажмите «Связаться» в карточке: откроются телефон, Telegram и e-mail, которые автор указал сам. Договаривайтесь об условиях и оплате напрямую. Площадка в расчётах не участвует.</p></details>
+        <details class="faq"><summary>Что делать с подозрительным объявлением?</summary><p>Откройте объявление и нажмите «Пожаловаться»: откроется письмо владельцу площадки. Объявление проверят и удалят при нарушении правил.</p></details>
+        <details class="faq"><summary>Как работает защита от спама?</summary><p>Форма автоматически проверяет объявление: ссылки в тексте, запрещённые темы, повторы, текст заглавными буквами, дубликаты, слишком частую подачу (не чаще раза в минуту и трёх раз в сутки). Спам-объявление не публикуется. После трёх попыток подряд публикация с устройства блокируется на 24 часа. Объявление, на которое пожаловались три разных человека, скрывается из каталога автоматически.</p></details>
+        <details class="faq"><summary>Как безопасно работать с исполнителем?</summary><p>Посмотрите портфолио, договоритесь о сроках и цене письменно, не переводите полную оплату вперёд незнакомому человеку. Площадка не проверяет исполнителей и не отвечает за сделки.</p></details>
+      </div>
+    </section>
+
+    <!-- ============ УСЛОВИЯ ============ -->
+    <section class="page" id="terms" data-page="terms" aria-labelledby="h-terms" hidden>
+      <div class="sec-head"><p class="eyebrow">Документы</p><h1 id="h-terms" class="page-title">Условия использования</h1><p>Простые правила пользования площадкой «Орбита Дизайн».</p></div>
+      <div class="glass pad legal">
+        <h2>1. Что это за сайт</h2>
+        <p>«Орбита Дизайн» — бесплатная доска объявлений для дизайнеров и их заказчиков. Площадка только показывает объявления и контакты. Она не является стороной сделок, не принимает платежи и не проверяет исполнителей.</p>
+        <h2>2. Бесплатно</h2>
+        <p>Размещение объявлений, просмотр каталога и связь с авторами бесплатны. Площадка не берёт комиссию и не продаёт платных тарифов.</p>
+        <h2>3. Ваши обязанности как автора</h2>
+        <p>Вы публикуете только достоверную информацию об услугах и свои работы. Вы указываете свои контакты и подтверждаете, что вправе их публиковать. Нельзя выдавать чужие работы за свои, размещать спам, обман, незаконный или оскорбительный контент и чужие персональные данные. Сайт автоматически проверяет объявления на спам и блокирует публикацию с устройства при повторных нарушениях.</p>
+        <h2>4. Права владельца площадки</h2>
+        <p>Владелец вправе отклонить, скрыть или удалить объявление, нарушающее эти условия или закон, без предупреждения, а также изменять сайт и условия. Актуальная версия всегда на этой странице.</p>
+        <h2>5. Ответственность</h2>
+        <p>Площадка предоставляется «как есть». Договорённости, оплата и качество работ — дело заказчика и исполнителя. Владелец не отвечает за убытки от сделок между пользователями и за временную недоступность сайта. Перед оплатой проверяйте исполнителя.</p>
+        <h2>6. Жалобы и связь</h2>
+        <p>Жалобы, просьбы удалить объявление и вопросы: <a href="mailto:proksi874@gmail.com">proksi874@gmail.com</a>. Обработка данных описана в <a href="#privacy">политике конфиденциальности</a>.</p>
+      </div>
+    </section>
+
+    <!-- ============ КОНТАКТЫ ============ -->
+    <section class="page" id="contacts" data-page="contacts" aria-labelledby="h-con" hidden>
+      <div class="sec-head"><p class="eyebrow">Связь с площадкой</p><h1 id="h-con" class="page-title">Контакты</h1><p>Вопросы по работе сайта, жалобы и сотрудничество.</p></div>
+      <div class="grid" id="siteContacts"></div>
+      <div class="glass pad">
+        <h2 style="font-size:1.25rem;margin-bottom:16px">Написать нам</h2>
+        <div style="display:grid;gap:16px;max-width:560px">
+          <label class="field">Ваше имя<input id="m-name" maxlength="50" autocomplete="name"></label>
+          <label class="field">Сообщение<textarea id="m-text" maxlength="600" placeholder="Опишите вопрос"></textarea></label>
+          <div class="row"><a class="btn" id="m-tg" href="#contacts">Отправить письмо</a><button class="btn ghost" type="button" id="m-copy">Скопировать текст</button></div>
+          <p class="status" id="m-status" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+      
+    </section>
+
+    <!-- ============ КОНФИДЕНЦИАЛЬНОСТЬ ============ -->
+    <section class="page" id="privacy" data-page="privacy" aria-labelledby="h-priv" hidden>
+      <div class="sec-head"><p class="eyebrow">Документы</p><h1 id="h-priv" class="page-title">Политика конфиденциальности</h1><p>Коротко и без сложных слов: какие данные есть на сайте и куда они попадают.</p></div>
+      <div class="glass pad legal">
+        <h2>Какие данные вы указываете</h2>
+        <p>В объявлении вы добавляете имя или название студии, описание услуги, фото работ и контакты (телефон, Telegram, e-mail, ссылка на портфолио). Эти данные вы вводите сами и добровольно.</p>
+        <h2>Где они хранятся</h2>
+        <p id="pv-store">Пока вы не отправили объявление на публикацию, оно хранится только в памяти вашего браузера на вашем устройстве. Сайт не передаёт его на сервер, не использует файлы cookie для слежки и не подключает счётчики и рекламу. Очистив данные сайта в браузере, вы удалите такие объявления.</p>
+        <h2>Что происходит при публикации</h2>
+        <p id="pv-pub">Кнопка «Отправить на публикацию» открывает письмо на почту владельца площадки. Письмо вы отправляете сами из своей почтовой программы. После проверки владелец добавляет объявление в общий каталог, и ваши контакты, указанные в объявлении, становятся видны всем посетителям.</p>
+        <h2>Как убрать объявление</h2>
+        <p id="pv-del">Напишите на proksi874@gmail.com с просьбой удалить объявление или изменить его. Мы удалим его из каталога. Объявления на вашем устройстве вы удаляете сами в разделе «Избранное и мои».</p>
+        <h2>Защита от спама</h2>
+        <p>Для защиты от спама сайт хранит в вашем браузере счётчики: время последних публикаций, число отклонённых попыток и контрольные суммы текстов. Эти данные никуда не передаются.</p>
+        <h2>Сторонние ресурсы</h2>
+        <p>Для шрифтов страница может обращаться к сервису Google Fonts, при этом ваш браузер сообщает ему свой IP-адрес. Других сторонних сервисов сайт не использует.</p>
+        <h2>Связь</h2>
+        <p>Вопросы по данным и обращения: proksi874@gmail.com.</p>
+      </div>
+    </section>
+
+    <footer class="site">
+      <a class="brand" href="#home" aria-label="Орбита Дизайн, на главную"><span data-logo></span><span><span class="word">ОРБИТА</span><small>ДИЗАЙН</small></span></a>
+      <span>Орбита Дизайн: бесплатная площадка объявлений для дизайнеров. Объявления публикуют сами авторы, проверяйте исполнителя перед оплатой. Почта: proksi874@gmail.com · <a href="#privacy">Политика конфиденциальности</a> · <a href="#terms">Условия использования</a></span>
+    </footer>
+  </main>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="m-title" hidden>
+  <div class="glass modal-card" id="modalCard"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- утилиты ---------- */
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  function h(tag, props) {
+    var el = document.createElement(tag); props = props || {};
+    Object.keys(props).forEach(function (k) {
+      var v = props[k]; if (v == null || v === false) return;
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    });
+    for (var i = 2; i < arguments.length; i++) add(el, arguments[i]);
+    return el;
+  }
+  function add(el, c) {
+    if (c == null || c === false) return;
+    if (Array.isArray(c)) { c.forEach(function (x) { add(el, x); }); return; }
+    el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  var MEM = {}, storageOk = true;
+  function lsGet(k, d) { try { var v = localStorage.getItem(k); if (v) return JSON.parse(v); } catch (e) { /* хранилище недоступно */ } try { return MEM[k] !== undefined ? JSON.parse(MEM[k]) : d; } catch (e2) { return d; } }
+  function lsSet(k, v) { var j = JSON.stringify(v); try { localStorage.setItem(k, j); delete MEM[k]; return true; } catch (e) { MEM[k] = j; storageOk = false; return true; } }
+  var NS = 'http://www.w3.org/2000/svg';
+  var ICONS = {
+    home: 'M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10', chart: 'M4 20V10M10 20V4M16 20v-7M22 20H2', grid: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+    users: 'M9 11a4 4 0 100-8 4 4 0 000 8zM2 21c0-4 3-6 7-6s7 2 7 6M17 4a4 4 0 010 7M22 21c0-3-2-5-5-5.7', plus: 'M12 4v16M4 12h16',
+    book: 'M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5zM19 19v2H6', chat: 'M4 5h16v11H9l-5 4V5z',
+    phone: 'M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z',
+    heart: 'M12 20s-8-5-8-11a4.5 4.5 0 018-2.5A4.5 4.5 0 0120 9c0 6-8 11-8 11z',
+    brand: 'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7L12 3z', web: 'M3 5h18v14H3zM3 9h18M7 7h.01M10 7h.01',
+    print: 'M7 3h10v5H7zM5 8h14v8h-4v5H9v-5H5z', pen: 'M4 20l4-1 11-11-3-3L5 16l-1 4zM14 6l3 3',
+    cube: 'M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zM12 12l8-4.5M12 12v9M12 12L4 7.5', box: 'M3 8l9-5 9 5-9 5-9-5zM3 8v8l9 5 9-5V8',
+    share: 'M5 12h6M5 6h14M5 18h10', other: 'M12 5v14M5 12h14'
+  };
+  function icon(name) {
+    var s = document.createElementNS(NS, 'svg');
+    s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor');
+    s.setAttribute('stroke-width', '2'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); s.setAttribute('aria-hidden', 'true');
+    var p = document.createElementNS(NS, 'path'); p.setAttribute('d', ICONS[name] || ICONS.other); s.appendChild(p); return s;
+  }
+  var nf = new Intl.NumberFormat('ru-RU');
+  var DAY = 864e5, LIFE = 30;
+  var calm = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var fine = !!(window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches);
+
+  /* ---------- логотип ---------- */
+  var LOGO = '<svg class="logo3d" viewBox="0 0 120 120" aria-hidden="true">' +
+    '<ellipse cx="60" cy="112" rx="34" ry="5" fill="#000" opacity=".5" filter="url(#lgBlur)"/>' +
+    '<g transform="rotate(-24 60 62)"><path d="M6 66 A54 17 0 0 1 114 66" fill="none" stroke="#4a3006" stroke-width="8" stroke-linecap="round"/><path d="M6 62 A54 17 0 0 1 114 62" fill="none" stroke="url(#lgG)" stroke-width="5.4" stroke-linecap="round"/></g>' +
+    '<g transform="rotate(-24 60 62)" clip-path="url(#lgBackHalf)"><g><circle r="5.2" fill="url(#lgE)" stroke="#9dffd8" stroke-opacity=".5" stroke-width=".6"><animateMotion dur="7s" repeatCount="indefinite" path="M6 62 A54 17 0 1 1 114 62 A54 17 0 1 1 6 62"/></circle></g></g>' +
+    '<circle cx="60" cy="62" r="28" fill="url(#lgP)"/>' +
+    '<g clip-path="url(#lgPlanet)"><circle cx="60" cy="62" r="28" fill="url(#lgLimb)"/><g transform="rotate(-24 60 62)"><path d="M6 71 A54 17 0 0 0 114 71" fill="none" stroke="#000" stroke-opacity=".42" stroke-width="9"/></g><ellipse cx="48" cy="48" rx="11" ry="7" fill="#fff" opacity=".42" filter="url(#lgBlur)"/></g>' +
+    '<g transform="rotate(-24 60 62)"><path d="M6 66 A54 17 0 0 0 114 66" fill="none" stroke="#4a3006" stroke-width="8" stroke-linecap="round"/><path d="M6 62 A54 17 0 0 0 114 62" fill="none" stroke="url(#lgG)" stroke-width="5.4" stroke-linecap="round"/><path d="M12 60 A48 15 0 0 0 108 60" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1" stroke-linecap="round"/></g>' +
+    '<g transform="rotate(-24 60 62)" clip-path="url(#lgFrontHalf)"><circle r="5.2" fill="url(#lgE)" stroke="#9dffd8" stroke-opacity=".6" stroke-width=".6"><animateMotion dur="7s" repeatCount="indefinite" path="M6 62 A54 17 0 1 1 114 62 A54 17 0 1 1 6 62"/></circle></g>' +
+    '<path d="M100 14 l2.2 6.2 6.2 2.2 -6.2 2.2 -2.2 6.2 -2.2 -6.2 -6.2 -2.2 6.2 -2.2z" fill="#fff6d0"><animateTransform attributeName="transform" type="scale" additive="sum" values="1;.7;1" dur="3s" repeatCount="indefinite"/></path></svg>';
+  $$('[data-logo]').forEach(function (m) { m.innerHTML = LOGO; });
+
+  /* ---------- справочники ---------- */
+  var CATS = [
+    { id: 'brand', name: 'Логотип и брендинг', ic: 'brand', hue: 43, kit: ['Логотип', 'Брендбук', 'Фирстиль'] },
+    { id: 'web', name: 'Веб и UI/UX', ic: 'web', hue: 190, kit: ['Лендинг', 'Интерфейсы', 'Прототип'] },
+    { id: 'print', name: 'Полиграфия', ic: 'print', hue: 20, kit: ['Визитки', 'Буклеты', 'Афиши'] },
+    { id: 'illus', name: 'Иллюстрация', ic: 'pen', hue: 320, kit: ['Персонажи', 'Обложки', 'Иконки'] },
+    { id: 'motion', name: '3D и моушн', ic: 'cube', hue: 270, kit: ['3D-модели', 'Анимация', 'Ролики'] },
+    { id: 'pack', name: 'Упаковка', ic: 'box', hue: 150, kit: ['Коробки', 'Этикетки', 'Макеты'] },
+    { id: 'smm', name: 'Соцсети и баннеры', ic: 'share', hue: 350, kit: ['Посты', 'Сторис', 'Баннеры'] },
+    { id: 'info', name: 'Инфографика и презентации', ic: 'chart', hue: 210, kit: ['Инфографика', 'Презентации', 'Дашборды'] }
+  ];
+  var CAT = { '': { id: '', name: 'Без категории', ic: 'grid', hue: 220, kit: [] } }; CATS.forEach(function (c) { CAT[c.id] = c; });
+  var SITE = { email: 'proksi874@gmail.com', telegram: '', phone: '' };
+  /* Одобренные объявления для общего каталога: добавляйте сюда проверенные объявления (формат — как у «Скопировать объявление для каталога»). */
+  var PUBLISHED = [];
+  function mailto(subject, body) { return 'mailto:' + SITE.email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body); }
+
+  /* ---------- проверка и очистка данных ---------- */
+  var RE_TG = /^[A-Za-z][A-Za-z0-9_]{4,31}$/;
+  var IMG_PREFIX = 'data:image/jpeg;base64,', MAX_IMG = 60000;
+  function normTg(v) { return String(v || '').trim().replace(/^https?:\/\/(www\.)?(t\.me|telegram\.me)\//i, '').replace(/^@/, '').replace(/[/?#].*$/, ''); }
+  function digits(v) { return String(v || '').replace(/\D/g, ''); }
+  function okPhone(v) { var d = digits(v); return d.length >= 10 && d.length <= 15 && /^[+\d\s()\-]+$/.test(String(v).trim()); }
+  function okEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+  function okUrl(v) { return /^https?:\/\/[^\s]+\.[^\s]+$/i.test(v); }
+  function str(v, n) { return String(v == null ? '' : v).slice(0, n); }
+  function normalize(raw, flags) {
+    var a = {
+      id: str(raw.id, 80), title: str(raw.title, 80), desc: str(raw.desc, 1000), name: str(raw.name, 50),
+      category: CAT[raw.category] ? raw.category : '',
+      format: ['remote', 'city', 'both'].indexOf(raw.format) >= 0 ? raw.format : 'remote',
+      city: str(raw.city, 40), priceType: ['project', 'hour', 'deal'].indexOf(raw.priceType) >= 0 ? raw.priceType : 'deal',
+      priceFrom: typeof raw.priceFrom === 'number' && isFinite(raw.priceFrom) && raw.priceFrom >= 0 ? raw.priceFrom : null,
+      tags: Array.isArray(raw.tags) ? raw.tags.slice(0, 5).map(function (t) { return str(t, 24); }).filter(Boolean) : [],
+      images: Array.isArray(raw.images) ? raw.images.filter(function (s) { return typeof s === 'string' && ((s.indexOf(IMG_PREFIX) === 0 && s.length <= MAX_IMG * 1.6) || /^(img\/[\w\-./]+\.(jpe?g|png|webp)|https:\/\/[^\s"'<>]+)$/i.test(s)); }).slice(0, 3) : [],
+      phone: okPhone(raw.phone) ? str(raw.phone, 24).trim() : '',
+      telegram: RE_TG.test(normTg(raw.telegram)) ? normTg(raw.telegram) : '',
+      email: okEmail(String(raw.email || '')) ? str(raw.email, 80) : '',
+      portfolio: okUrl(String(raw.portfolio || '')) ? str(raw.portfolio, 200) : '',
+      createdAt: typeof raw.createdAt === 'number' ? raw.createdAt : Date.now(),
+      expiresAt: typeof raw.expiresAt === 'number' ? raw.expiresAt : Date.now() + LIFE * DAY,
+      authorId: str(raw.authorId, 80),
+      imgs: typeof raw.imgs === 'number' && raw.imgs > 0 ? Math.min(3, Math.floor(raw.imgs)) : 0
+    };
+    if (flags) Object.keys(flags).forEach(function (k) { a[k] = flags[k]; });
+    return a;
+  }
+  function clean(a) { var o = {}; Object.keys(a).forEach(function (k) { if (k !== 'local' && k.charAt(0) !== '_') o[k] = a[k]; }); return o; }
+
+  /* ---------- состояние ---------- */
+  var remote = (Array.isArray(PUBLISHED) ? PUBLISHED : []).map(function (r) { return normalize(r, {}); }), local = [], favs = [];
+  var st = { q: '', cat: '', fmt: '', city: '', bud: '', sort: 'new', favOnly: false, limit: 9, dq: '' };
+  var cur = 'home', editing = null, formImages = [];
+
+  var rawLocal = lsGet('orbita.local', []);
+  local = Array.isArray(rawLocal) ? rawLocal.map(function (r) { return normalize(r, { local: true }); }) : [];
+  var rawFav = lsGet('orbita.fav', []); favs = Array.isArray(rawFav) ? rawFav.map(String) : [];
+  function saveLocal() { return lsSet('orbita.local', local.map(clean)); }
+
+  /* ---------- общий каталог на Firebase (включается, когда заполнен FB) ---------- */
+  var FB = { apiKey: 'AIzaSyDNMVe03ZECn7JE1p3EuVT9IQ4xBfx8LJY', databaseURL: 'https://orbite-40094-default-rtdb.europe-west1.firebasedatabase.app' };
+  var BACKEND = !!(FB.apiKey && FB.databaseURL), REPORT_HIDE = 3;
+  var reportsMap = {}, staticAds = remote.slice(), fbAds = [], authState = lsGet('orbita.auth', null), myUid = authState && authState.uid ? String(authState.uid) : '', imgCache = {};
+  function rebuildRemote() { var ids = {}; remote = []; fbAds.concat(staticAds).forEach(function (a) { if (!ids[a.id]) { ids[a.id] = 1; remote.push(a); } }); }
+  function dbUrl(path, tok) { return FB.databaseURL.replace(/\/$/, '') + '/' + path + '.json' + (tok ? '?auth=' + encodeURIComponent(tok) : ''); }
+  function jfetch(url, opt) {
+    return fetch(url, opt).then(function (r) { return r.text().then(function (t) { var j = null; try { j = t ? JSON.parse(t) : null; } catch (e) { /* не json */ } if (!r.ok) { var er = new Error('http ' + r.status); er.status = r.status; er.body = j; throw er; } return j; }); });
+  }
+  function saveAuth(a) { authState = a; myUid = a && a.uid ? String(a.uid) : ''; lsSet('orbita.auth', a); }
+  function getAuth() {
+    if (!BACKEND) return Promise.reject(new Error('no backend'));
+    if (authState && authState.idToken && authState.exp > Date.now() + 60000) return Promise.resolve(authState);
+    if (authState && authState.refreshToken) {
+      return jfetch('https://securetoken.googleapis.com/v1/token?key=' + encodeURIComponent(FB.apiKey), { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(authState.refreshToken) })
+        .then(function (j) { var a = { idToken: j.id_token, refreshToken: j.refresh_token, uid: j.user_id, exp: Date.now() + Number(j.expires_in || 3600) * 1000 }; saveAuth(a); return a; });
+    }
+    return jfetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + encodeURIComponent(FB.apiKey), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ returnSecureToken: true }) })
+      .then(function (j) { var a = { idToken: j.idToken, refreshToken: j.refreshToken, uid: j.localId, exp: Date.now() + Number(j.expiresIn || 3600) * 1000 }; saveAuth(a); return a; });
+  }
+  function fbWrite(method, path, body) {
+    return getAuth().then(function (a) { return jfetch(dbUrl(path, a.idToken), { method: method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) }); });
+  }
+  function loadCatalog() {
+    if (!BACKEND) return Promise.resolve();
+    return jfetch(dbUrl('ads')).then(function (obj) {
+      var arr = []; if (obj && typeof obj === 'object') Object.keys(obj).forEach(function (k) { var v = obj[k]; if (v && typeof v === 'object') { var a = normalize(Object.assign({}, v, { id: k }), {}); if (a.title) arr.push(a); } });
+      fbAds = arr; rebuildRemote(); updateNav(); renderPage(cur);
+    }).catch(function () { /* нет связи: показываем то, что есть */ }).then(function () {
+      return jfetch(dbUrl('reports')).then(function (r) { var m = {}; if (r && typeof r === 'object') Object.keys(r).forEach(function (k) { m[k] = r[k] && typeof r[k] === 'object' ? Object.keys(r[k]).length : 0; }); reportsMap = m; renderPage(cur); }, function () { /* без жалоб */ });
+    });
+  }
+  function ensureImages(a, cb) {
+    if (a.images.length || !a.imgs || a.local || a._imgDone) return cb();
+    if (imgCache[a.id]) { a.images = imgCache[a.id]; a._imgDone = true; return cb(); }
+    jfetch(dbUrl('adimg/' + a.id)).then(function (j) { var im = Array.isArray(j) ? j : (j && typeof j === 'object' ? Object.keys(j).map(function (k) { return j[k]; }) : []); a.images = im.filter(function (x) { return typeof x === 'string' && x.indexOf(IMG_PREFIX) === 0; }).slice(0, 3); imgCache[a.id] = a.images; a._imgDone = true; cb(); }, function () { a._imgDone = true; cb(); });
+  }
+  function publishRemote(ad, isNew) {
+    var rec = clean(ad); delete rec.images; delete rec.id; delete rec.sent; rec.imgs = ad.images.length;
+    return getAuth().then(function (au) {
+      rec.authorId = au.uid;
+      return (isNew ? fbWrite('PUT', 'limits/' + au.uid, { '.sv': 'timestamp' }) : Promise.resolve()).then(function () { return fbWrite('PUT', 'ads/' + ad.id, rec); }).then(function () {
+        return ad.images.length ? fbWrite('PUT', 'adimg/' + ad.id, ad.images) : fbWrite('DELETE', 'adimg/' + ad.id).catch(function () { /* нечего удалять */ });
+      }).then(function () { var n = normalize(Object.assign({}, rec, { id: ad.id, images: ad.images }), {}); imgCache[n.id] = n.images; fbAds = fbAds.filter(function (x) { return x.id !== n.id; }); fbAds.unshift(n); rebuildRemote(); return n; });
+    });
+  }
+
+  function allAds() { var ids = {}; remote.forEach(function (a) { ids[a.id] = 1; }); return remote.concat(local.filter(function (a) { return !ids[a.id]; })).filter(function (a) { return a.expiresAt > Date.now() && ((reportsMap[a.id] || 0) < REPORT_HIDE || isMine(a)); }); }
+  function isMine(a) { return !!a.local || !!(myUid && a.authorId === myUid); }
+  function sortAds(list, mode) {
+    var c = list.slice(), price = function (a) { return a.priceFrom == null ? Infinity : a.priceFrom; };
+    if (mode === 'pa') c.sort(function (x, y) { return price(x) - price(y) || y.createdAt - x.createdAt; });
+    else if (mode === 'pd') c.sort(function (x, y) { var px = price(x) === Infinity ? -1 : price(x), py = price(y) === Infinity ? -1 : price(y); return py - px || y.createdAt - x.createdAt; });
+    else c.sort(function (x, y) { return y.createdAt - x.createdAt; });
+    return c;
+  }
+  function priceText(a) {
+    if (a.priceFrom == null || a.priceType === 'deal') return a.priceFrom == null ? 'Цена договорная' : 'от ' + nf.format(a.priceFrom) + ' ₽';
+    return 'от ' + nf.format(a.priceFrom) + ' ₽ / ' + (a.priceType === 'hour' ? 'час' : 'проект');
+  }
+  function fmtText(a) { return a.format === 'remote' ? 'Удалённо' : a.format === 'city' ? (a.city || 'В городе') : 'Удалённо и ' + (a.city || 'в городе'); }
+  function ago(ts) { var d = Math.floor((Date.now() - ts) / DAY); return d <= 0 ? 'сегодня' : d === 1 ? 'вчера' : d + ' дн. назад'; }
+  function left(a) { return Math.ceil((a.expiresAt - Date.now()) / DAY); }
+  function when(ts) { return new Date(ts).toLocaleString('ru-RU', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+
+  /* ---------- уведомления, копирование, ripple ---------- */
+  var toastTimer;
+  function toast(msg) { var t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 3800); }
+  function copy(text, label, srcEl) {
+    var done = function () { toast('Скопировано: ' + (label || 'текст')); };
+    var fail = function () {
+      if (srcEl) { var r = document.createRange(); r.selectNodeContents(srcEl); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+      toast('Не удалось скопировать автоматически, выделенный текст скопируйте вручную');
+    };
+    try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fail); else fail(); } catch (e) { fail(); }
+  }
+  document.addEventListener('pointerdown', function (e) {
+    var b = e.target.closest ? e.target.closest('.btn') : null;
+    if (!b || calm || b.hasAttribute('disabled')) return;
+    var r = b.getBoundingClientRect(), s = h('span', { class: 'ripple' });
+    s.style.left = (e.clientX - r.left) + 'px'; s.style.top = (e.clientY - r.top) + 'px';
+    b.appendChild(s); setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 650);
+  });
+
+  /* ---------- карточки ---------- */
+  function favBtn(a) {
+    var on = favs.indexOf(a.id) >= 0;
+    var b = h('button', { class: 'fav', type: 'button', 'aria-pressed': on ? 'true' : 'false', 'aria-label': on ? 'Убрать из избранного' : 'В избранное' }, icon('heart'));
+    b.addEventListener('click', function (e) { e.stopPropagation(); toggleFav(a.id); });
+    return b;
+  }
+  function toggleFav(id) {
+    var i = favs.indexOf(id); if (i >= 0) favs.splice(i, 1); else favs.push(id);
+    lsSet('orbita.fav', favs); updateNav(); renderPage(cur); toast(i >= 0 ? 'Убрано из избранного' : 'Добавлено в избранное');
+  }
+  function coverNode(a) {
+    if (a.images.length) return h('div', { class: 'coverbox' }, h('img', { class: 'cover', src: a.images[0], alt: 'Пример работы: ' + a.title, loading: 'lazy' }));
+    if (!a.imgs || a.local) return null;
+    var box = h('div', { class: 'coverbox' });
+    ensureImages(a, function () { if (a.images.length) box.appendChild(h('img', { class: 'cover', src: a.images[0], alt: 'Пример работы: ' + a.title, loading: 'lazy' })); else if (box.parentNode) box.parentNode.removeChild(box); });
+    return box;
+  }
+  function pubButton(a) {
+    if (!a.local) return null;
+    if (BACKEND) return h('button', { class: 'btn small', type: 'button', onclick: function () { publishLocal(a, this); } }, 'Опубликовать');
+    return h('a', { class: 'btn small', href: mailto('Объявление на Орбите: ' + a.title, pubText(a)), onclick: function () { copy(pubText(a), 'Текст объявления'); toast('Текст скопирован. Если письмо не открылось, вставьте текст в письмо на ' + SITE.email); } }, 'Отправить на публикацию');
+  }
+  function publishLocal(a, btn) {
+    if (btn) btn.disabled = true;
+    publishRemote(a, true).then(function () { local = local.filter(function (x) { return x.id !== a.id; }); saveLocal(); toast('Опубликовано: объявление видно всем'); updateNav(); renderPage(cur); },
+      function () { if (btn) btn.disabled = false; toast('Не удалось опубликовать. Проверьте интернет и повторите'); });
+  }
+  function card(a, o) {
+    o = o || {};
+    var exp = left(a);
+    var el = h('article', { class: 'glass ad tilt' },
+      coverNode(a),
+      h('div', { class: 'badges' }, h('span', { class: 'badge', text: CAT[a.category].name }),
+        null,
+        o.mine ? h('span', { class: 'badge ' + (exp > 0 ? 'gold' : 'red'), text: exp > 0 ? 'Осталось ' + exp + ' дн.' : 'Срок истёк' }) : null),
+      h('h3', { text: a.title || 'Без заголовка' }),
+      h('p', { class: 'desc', text: a.desc || 'Описание появится здесь.' }),
+      a.tags.length ? h('div', { class: 'tags' }, a.tags.map(function (t) { return h('span', { text: t }); })) : null,
+      h('div', { class: 'meta' }, h('span', { class: 'price', text: priceText(a) }), h('span', { text: fmtText(a) }), h('span', { text: ago(a.createdAt) })),
+      h('div', { class: 'ad-foot' },
+        h('span', { class: 'author', text: a.name || 'Автор' }),
+        h('div', { class: 'row' },
+          o.preview || o.mine ? null : favBtn(a),
+          o.preview ? null : h('button', { class: o.mine ? 'btn ghost small' : 'btn small', type: 'button', onclick: function () { openModal(a); } }, o.mine ? 'Открыть' : 'Связаться'),
+          o.mine ? pubButton(a) : null,
+          o.mine ? h('button', { class: 'btn small', type: 'button', onclick: function () { startEdit(a); } }, 'Изменить') : null,
+          o.mine ? h('button', { class: 'btn ghost small', type: 'button', onclick: function () { renew(a); } }, 'Продлить') : null,
+          o.mine ? h('button', { class: 'btn ghost small', type: 'button', onclick: function () { removeAd(a); } }, 'Удалить') : null)));
+    return el;
+  }
+  function cards(list, target, optsFn, emptyNode) {
+    clear(target);
+    if (!list.length) { target.appendChild(emptyNode); return; }
+    list.forEach(function (a) { target.appendChild(card(a, optsFn ? optsFn(a) : null)); });
+  }
+  function emptyBox(title, text, btn) {
+    return h('div', { class: 'glass empty', style: 'grid-column:1/-1' }, h('h3', { text: title }), text ? h('p', { class: 'muted', text: text }) : null, btn || null);
+  }
+
+  /* ---------- окна ---------- */
+  var lastFocus = null;
+  function row(label, value, copyText, extra) {
+    var val = h('span', { class: 'val', text: value });
+    return h('div', { class: 'glass contact-card' }, h('div', null, h('b', { text: label }), val),
+      h('div', { class: 'row' }, extra || null, copyText ? h('button', { class: 'btn ghost small', type: 'button', onclick: function () { copy(copyText, label, val); } }, 'Скопировать') : null));
+  }
+  function showModal() { $('#modal').hidden = false; var c = $('#modalCard'); c.scrollTop = 0; }
+  function modalBase(title) {
+    lastFocus = document.activeElement;
+    var m = $('#modalCard'); clear(m);
+    var close = h('button', { class: 'btn ghost small modal-close', type: 'button', 'aria-label': 'Закрыть', onclick: closeModal }, 'Закрыть');
+    m.appendChild(close); m.appendChild(h('h2', { id: 'm-title', text: title }));
+    return { m: m, close: close };
+  }
+  function pubText(a) {
+    return 'Прошу опубликовать объявление в каталоге Орбита Дизайн.\n\nЗаголовок: ' + a.title + '\nНаправление: ' + CAT[a.category].name + '\nЦена: ' + priceText(a) + '\nФормат: ' + fmtText(a) + '\nОписание: ' + a.desc + (a.tags.length ? '\nНавыки: ' + a.tags.join(', ') : '') + '\nАвтор: ' + a.name + (a.telegram ? '\nTelegram: @' + a.telegram : '') + (a.phone ? '\nТелефон: ' + a.phone : '') + (a.email ? '\nE-mail: ' + a.email : '') + (a.portfolio ? '\nПортфолио: ' + a.portfolio : '') + '\n\nФото (' + a.images.length + ') приложу к письму.\n\n--- данные для каталога (не удаляйте) ---\n' + JSON.stringify(clean(Object.assign({}, a, { images: [], local: undefined })));
+  }
+  function adText(a) {
+    return a.title + '\n' + priceText(a) + ', ' + fmtText(a) + '\nАвтор: ' + a.name + (a.telegram ? '\nTelegram: @' + a.telegram : '') + (a.phone ? '\nТелефон: ' + a.phone : '') + (a.email ? '\nE-mail: ' + a.email : '');
+  }
+  function reportAd(a, text, btn) {
+    btn.disabled = true;
+    getAuth().then(function (au) { return fbWrite('PUT', 'reports/' + a.id + '/' + au.uid, { '.sv': 'timestamp' }); }).then(function () {
+      reportsMap[a.id] = (reportsMap[a.id] || 0) + 1; toast('Жалоба принята. Объявление с несколькими жалобами скрывается автоматически');
+    }, function (er) { btn.disabled = false; toast(er && er.status === 403 ? 'Вы уже жаловались на это объявление' : 'Не удалось отправить жалобу. Напишите на ' + SITE.email); try { if (!(er && er.status === 403)) window.location.href = mailto('Жалоба на объявление', text); } catch (e) { /* без почты */ } });
+  }
+  function openModal(a) {
+    var b = modalBase(a.title), m = b.m;
+    var contacts = h('div', { style: 'display:grid;gap:10px' });
+    if (a.telegram) contacts.appendChild(row('Telegram', '@' + a.telegram, '@' + a.telegram, h('a', { class: 'btn small', href: 'https://t.me/' + a.telegram, target: '_blank', rel: 'noopener' }, 'Открыть чат')));
+    if (a.phone) contacts.appendChild(row('Телефон', a.phone, a.phone));
+    if (a.email) contacts.appendChild(row('E-mail', a.email, a.email));
+    if (a.portfolio) contacts.appendChild(row('Портфолио', a.portfolio, a.portfolio, h('a', { class: 'btn small', href: a.portfolio, target: '_blank', rel: 'noopener' }, 'Открыть')));
+    if (!contacts.firstChild) contacts.appendChild(h('p', { class: 'muted', text: 'Автор не указал контакты.' }));
+    var rep = 'Жалоба на объявление «' + a.title + '» (id ' + a.id + '). Причина: ';
+    m.appendChild(h('div', { class: 'badges' }, h('span', { class: 'badge', text: CAT[a.category].name }), null));
+    m.appendChild(h('div', { class: 'meta' }, h('span', { class: 'price', text: priceText(a) }), h('span', { text: fmtText(a) }), h('span', { text: 'Автор: ' + a.name }), h('span', { text: ago(a.createdAt) })));
+    var gal = h('div', { class: 'gallery' }); m.appendChild(gal);
+    var fillGal = function () { clear(gal); a.images.forEach(function (src) { gal.appendChild(h('img', { src: src, alt: 'Пример работы автора', loading: 'lazy' })); }); };
+    fillGal(); if (!a.images.length && a.imgs) ensureImages(a, fillGal);
+    m.appendChild(h('p', { class: 'full', text: a.desc }));
+    if (a.tags.length) m.appendChild(h('div', { class: 'tags' }, a.tags.map(function (t) { return h('span', { text: t }); })));
+    m.appendChild(h('h3', { text: 'Контакты автора' }));
+    m.appendChild(contacts);
+    m.appendChild(h('div', { class: 'row' },
+      h('button', { class: 'btn ghost small', type: 'button', onclick: function () { copy(adText(a), 'Объявление'); } }, 'Скопировать объявление'),
+      a.local ? pubButton(a)
+        : (BACKEND ? h('button', { class: 'btn ghost small', type: 'button', onclick: function () { reportAd(a, rep, this); } }, 'Пожаловаться') : h('a', { class: 'btn ghost small', href: mailto('Жалоба на объявление', rep) }, 'Пожаловаться'))));
+    showModal(); b.close.focus();
+  }
+  function closeModal() { $('#modal').hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  $('#modal').addEventListener('click', function (e) { if (e.target === this) closeModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !$('#modal').hidden) closeModal();
+    if (e.key === 'Tab' && !$('#modal').hidden) {
+      var f = $$('a[href],button:not([disabled]),textarea,input', $('#modalCard')); if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  /* ---------- навигация ---------- */
+  var PAGES = [
+    { id: 'home', t: 'Главная', s: 'Как всё устроено', ic: 'home' }, { id: 'ads', t: 'Объявления', s: 'Найти исполнителя', ic: 'grid' }, { id: 'designers', t: 'Дизайнеры', s: 'Список авторов', ic: 'users' },
+    { id: 'post', t: 'Подать объявление', s: 'Разместить бесплатно', ic: 'plus' }, { id: 'saved', t: 'Избранное и мои', s: 'Сохранённое и ваши', ic: 'heart' },
+    { id: 'rules', t: 'Правила и вопросы', s: 'Ответы и жалобы', ic: 'book' }, { id: 'contacts', t: 'Контакты', s: 'Связь с площадкой', ic: 'phone' }
+    , { id: 'privacy', t: 'Политика конфиденциальности', s: '', ic: 'book', hide: true }, { id: 'terms', t: 'Условия использования', s: '', ic: 'book', hide: true }
+  ];
+  var TITLES = { home: 'Орбита Дизайн — бесплатные объявления для дизайнеров', ads: 'Объявления дизайнеров', designers: 'Дизайнеры', post: 'Подать объявление', saved: 'Избранное и мои объявления', rules: 'Правила и вопросы', contacts: 'Контакты', terms: 'Условия использования', privacy: 'Политика конфиденциальности' };
+  function buildNav() {
+    var nav = $('#menu'); clear(nav);
+    PAGES.forEach(function (p) {
+      if (p.hide) return;
+      var a = h('a', { class: 'btn nav', href: '#' + p.id, 'data-id': p.id, title: p.s }, icon(p.ic), h('span', { class: 'lbl' }, h('b', { text: p.t }), h('small', { text: p.s })));
+      if (p.id === 'saved') a.appendChild(h('span', { class: 'count', id: 'savedCount', text: '0' }));
+      nav.appendChild(a);
+    });
+  }
+  function updateNav() {
+    $$('#menu a').forEach(function (a) { if (a.getAttribute('data-id') === cur) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    var n = favs.length + local.length + (myUid ? remote.filter(function (a) { return a.authorId === myUid; }).length : 0);
+    var c = $('#savedCount'); if (c) c.textContent = String(n);
+  }
+  var enterTimer;
+  function route(want) {
+    var id = typeof want === 'string' ? want : location.hash.replace('#', '');
+    if (!PAGES.some(function (p) { return p.id === id; })) id = 'home';
+    cur = id; try { document.title = id === 'home' ? TITLES.home : TITLES[id] + ' — Орбита Дизайн'; } catch (e) { /* без заголовка */ }
+    $$('.page').forEach(function (p) {
+      var on = p.getAttribute('data-page') === id;
+      p.hidden = !on; p.classList.remove('enter'); if (on) { void p.offsetWidth; p.classList.add('enter'); clearTimeout(enterTimer); enterTimer = setTimeout(function () { p.classList.remove('enter'); }, 1100); }
+    });
+    $('#rail').classList.remove('open'); $('#menuBtn').setAttribute('aria-expanded', 'false');
+    updateNav(); renderPage(id); window.scrollTo(0, 0);
+  }
+  function go(id) {
+    if (!PAGES.some(function (p) { return p.id === id; })) id = 'home';
+    try { if (location.hash !== '#' + id) history.pushState(null, '', '#' + id); } catch (e) { try { location.hash = '#' + id; } catch (e2) { /* без адреса */ } }
+    route(id);
+  }
+  window.addEventListener('hashchange', function () { route(); });
+  window.addEventListener('popstate', function () { route(); });
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    if (PAGES.some(function (p) { return p.id === id; })) { e.preventDefault(); go(id); }
+  });
+  $('#menuBtn').addEventListener('click', function () { var o = $('#rail').classList.toggle('open'); this.setAttribute('aria-expanded', o ? 'true' : 'false'); });
+
+  /* ---------- страницы ---------- */
+  function renderPage(id) {
+    if (id === 'home') renderHome(); else if (id === 'ads') renderAds(); else if (id === 'designers') renderDesigners();
+    else if (id === 'post') { renderPreview(); showBlockNote(); } else if (id === 'contacts') renderContacts(); else if (id === 'saved') renderSaved();
+    $('#modeNote').textContent = BACKEND ? 'Бесплатно, без регистрации. Объявления публикуются сразу и остаются на сайте.' : 'Бесплатно, без регистрации. Ваши объявления хранятся на этом устройстве, отправьте их на публикацию, чтобы их увидели все.';
+    $('#keyBox').hidden = !(BACKEND && id === 'saved'); if (id !== 'saved') setSaved('');
+  }
+  function designersOf(list) {
+    var map = {};
+    list.forEach(function (a) {
+      var k = (a.authorId || a.telegram || a.phone || a.name).toLowerCase();
+      var d = map[k] || (map[k] = { name: a.name, ads: [], cats: {}, city: a.city });
+      d.ads.push(a); d.cats[a.category] = true;
+    });
+    return Object.keys(map).map(function (k) { return map[k]; });
+  }
+  function countUp(el, to) {
+    if (calm || to < 2) { el.textContent = String(to); return; }
+    var t0 = performance.now();
+    (function step(t) { var p = Math.min(1, (t - t0) / 900); el.textContent = String(Math.round(to * (1 - Math.pow(1 - p, 3)))); if (p < 1) requestAnimationFrame(step); })(t0);
+  }
+  function renderHome() {
+    var list = allAds(), ds = designersOf(list), stats = $('#stats'); clear(stats);
+    [[list.length, 'объявлений'], [ds.length, 'дизайнеров'], [CATS.length, 'направлений']].forEach(function (s) {
+      var b = h('b', { text: '0' }); stats.appendChild(h('div', null, b, h('span', { text: s[1] }))); countUp(b, s[0]);
+    });
+    var cats = $('#homeCats'); clear(cats);
+    CATS.forEach(function (c) {
+      var n = list.filter(function (a) { return a.category === c.id; }).length;
+      cats.appendChild(h('button', { class: 'glass cat tilt', type: 'button', style: '--hue:' + c.hue, onclick: function () { st.cat = c.id; st.limit = 9; syncFilters(); go('ads'); } },
+        h('span', { class: 'disc' }, icon(c.ic)), h('b', { text: c.name }),
+        h('span', { class: 'kit' }, c.kit.map(function (k) { return h('em', { text: k }); })),
+        h('span', { class: 'cnt' }, h('strong', { text: String(n) }), document.createTextNode(' объявл.')),
+        h('i', { class: 'bar', style: '--w:' + (list.length ? Math.round(n / list.length * 100) : 0) + '%' })));
+    });
+    cards(sortAds(list, 'new').slice(0, 3), $('#homeFeatured'), null, emptyBox('Объявлений пока нет', 'Станьте первым: размещение бесплатное.', h('a', { class: 'btn', href: '#post' }, 'Подать объявление')));
+  }
+
+  function filtered() {
+    var q = st.q.trim().toLowerCase(), cq = st.city.trim().toLowerCase(), bud = st.bud === '' ? null : Number(st.bud);
+    var out = allAds().filter(function (a) {
+      if (st.cat && (st.cat === '_none' ? a.category !== '' : a.category !== st.cat)) return false;
+      if (st.fmt === 'remote' && a.format === 'city') return false;
+      if (st.fmt === 'city' && a.format === 'remote') return false;
+      if (cq && a.city.toLowerCase().indexOf(cq) < 0) return false;
+      if (bud != null && !isNaN(bud) && (a.priceFrom == null || a.priceFrom > bud)) return false;
+      if (st.favOnly && favs.indexOf(a.id) < 0) return false;
+      if (q) { var hay = (a.title + ' ' + a.desc + ' ' + a.name + ' ' + a.tags.join(' ') + ' ' + a.city + ' ' + CAT[a.category].name).toLowerCase(); if (hay.indexOf(q) < 0) return false; }
+      return true;
+    });
+    return sortAds(out, st.sort);
+  }
+  function syncFilters() { $('#fq').value = st.q; $('#ffmt').value = st.fmt; $('#fcity').value = st.city; $('#fbud').value = st.bud; $('#fsort').value = st.sort; $('#ffav').checked = st.favOnly; }
+  function renderChips() {
+    var box = $('#fcats'); clear(box);
+    [{ id: '', name: 'Все направления' }].concat(CATS, [{ id: '_none', name: 'Без категории' }]).forEach(function (c) {
+      box.appendChild(h('button', { class: 'chip', type: 'button', 'aria-pressed': st.cat === c.id ? 'true' : 'false', onclick: function () { st.cat = c.id; st.limit = 9; renderAds(); } }, c.name));
+    });
+  }
+  function renderAds() {
+    renderChips();
+    var res = filtered(); $('#fcount').textContent = 'Найдено: ' + res.length;
+    cards(res.slice(0, st.limit), $('#adsList'), null, emptyBox(allAds().length ? 'Ничего не найдено' : 'Объявлений пока нет',
+      allAds().length ? 'Измените запрос или сбросьте фильтры.' : 'Станьте первым: размещение бесплатное.',
+      allAds().length ? h('button', { class: 'btn ghost', type: 'button', onclick: resetFilters }, 'Сбросить фильтры') : h('a', { class: 'btn', href: '#post' }, 'Подать объявление')));
+    $('#moreRow').hidden = res.length <= st.limit;
+  }
+  function resetFilters() { st.q = ''; st.cat = ''; st.fmt = ''; st.city = ''; st.bud = ''; st.sort = 'new'; st.favOnly = false; st.limit = 9; syncFilters(); renderAds(); }
+  [['#fq', 'input', 'q'], ['#ffmt', 'change', 'fmt'], ['#fcity', 'input', 'city'], ['#fbud', 'input', 'bud']].forEach(function (f) {
+    $(f[0]).addEventListener(f[1], function () { st[f[2]] = this.value; st.limit = 9; renderAds(); });
+  });
+  $('#fsort').addEventListener('change', function () { st.sort = this.value; renderAds(); });
+  $('#ffav').addEventListener('change', function () { st.favOnly = this.checked; st.limit = 9; renderAds(); });
+  $('#freset').addEventListener('click', resetFilters);
+  $('#moreBtn').addEventListener('click', function () { st.limit += 9; renderAds(); });
+
+  function renderDesigners() {
+    var q = st.dq.trim().toLowerCase();
+    var ds = designersOf(allAds()).filter(function (d) {
+      return !q || (d.name + ' ' + d.city + ' ' + Object.keys(d.cats).map(function (c) { return CAT[c].name; }).join(' ')).toLowerCase().indexOf(q) >= 0;
+    }).sort(function (a, b) { return b.ads.length - a.ads.length; });
+    var box = $('#desList'); clear(box);
+    if (!ds.length) { box.appendChild(emptyBox(allAds().length ? 'Никого не нашли' : 'Дизайнеров пока нет', allAds().length ? 'Попробуйте другой запрос.' : 'Они появятся, когда будут опубликованы первые объявления.', allAds().length ? null : h('a', { class: 'btn', href: '#post' }, 'Подать объявление'))); return; }
+    ds.forEach(function (d) {
+      var first = sortAds(d.ads, 'new')[0];
+      box.appendChild(h('article', { class: 'glass des tilt' }, h('div', { class: 'coin', text: (d.name || '?').trim().charAt(0).toUpperCase() }),
+        h('h3', { text: d.name }),
+        h('div', { class: 'badges' }, Object.keys(d.cats).map(function (c) { return h('span', { class: 'badge', text: CAT[c].name }); })),
+        h('p', { class: 'muted', text: d.ads.length + ' ' + (d.ads.length === 1 ? 'объявление' : 'объявл.') + (d.city ? ' · ' + d.city : '') }),
+        h('div', { class: 'row' }, h('button', { class: 'btn small', type: 'button', onclick: function () { openModal(first); } }, 'Контакты'),
+          h('button', { class: 'btn ghost small', type: 'button', onclick: function () { st.q = d.name; st.cat = ''; st.limit = 9; syncFilters(); go('ads'); } }, 'Все объявления'))));
+    });
+  }
+  $('#dq').addEventListener('input', function () { st.dq = this.value; renderDesigners(); });
+
+  function renderSaved() {
+    var mine = remote.concat(local).filter(isMine);
+    cards(sortAds(mine, 'new'), $('#myList'), function () { return { mine: true }; }, emptyBox('У вас пока нет объявлений', 'Опубликуйте первое, оно появится здесь.', h('a', { class: 'btn', href: '#post' }, 'Подать объявление')));
+    var fv = allAds().filter(function (a) { return favs.indexOf(a.id) >= 0; });
+    cards(sortAds(fv, 'new'), $('#favList'), null, emptyBox('Избранное пусто', 'Нажмите на сердце в карточке объявления.', h('a', { class: 'btn ghost', href: '#ads' }, 'К объявлениям')));
+  }
+
+  function renderContacts() {
+    var box = $('#siteContacts'); clear(box);
+    box.appendChild(row('E-mail', SITE.email, SITE.email, h('a', { class: 'btn small', href: mailto('Вопрос по сайту Орбита Дизайн', '') }, 'Написать')));
+    if (SITE.telegram && RE_TG.test(SITE.telegram)) box.appendChild(row('Telegram', '@' + SITE.telegram, '@' + SITE.telegram, h('a', { class: 'btn small', href: 'https://t.me/' + SITE.telegram, target: '_blank', rel: 'noopener' }, 'Открыть')));
+    if (SITE.phone && okPhone(SITE.phone)) box.appendChild(row('Телефон', SITE.phone, SITE.phone));
+    updateMsgLink();
+  }
+  function msgText() { var n = $('#m-name').value.trim(); return (n ? n + ': ' : '') + $('#m-text').value.trim(); }
+  function updateMsgLink() { $('#m-tg').href = mailto('Сообщение с сайта Орбита Дизайн', msgText()); }
+  $('#m-name').addEventListener('input', updateMsgLink); $('#m-text').addEventListener('input', updateMsgLink);
+  $('#m-tg').addEventListener('click', function (e) {
+    var s = $('#m-status');
+    if (!$('#m-text').value.trim()) { e.preventDefault(); s.className = 'status err-on'; s.textContent = 'Напишите сообщение.'; return; }
+    s.className = 'status ok'; s.textContent = 'Если почтовая программа не открылась, скопируйте текст кнопкой рядом и отправьте на ' + SITE.email + '.';
+  });
+  $('#m-copy').addEventListener('click', function () {
+    var s = $('#m-status');
+    if (!$('#m-text').value.trim()) { s.className = 'status'; s.textContent = 'Напишите сообщение.'; return; }
+    copy(msgText(), 'Сообщение'); s.className = 'status ok'; s.textContent = 'Текст скопирован.';
+  });
+  /* ---------- форма объявления ---------- */
+  function buildPostForm() { var sel = $('#p-cat'); CATS.forEach(function (c) { sel.appendChild(h('option', { value: c.id, text: c.name })); }); }
+  function draft() {
+    var price = $('#p-price').value.trim(), ptype = $('#p-ptype').value;
+    return {
+      title: $('#p-title').value.trim(), category: $('#p-cat').value, desc: $('#p-desc').value.trim(), format: $('#p-fmt').value, city: $('#p-city').value.trim(),
+      priceFrom: price === '' ? null : Number(price), priceType: ptype, tags: $('#p-tags').value.split(',').map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 5),
+      name: $('#p-name').value.trim(), phone: $('#p-phone').value.trim(), telegram: normTg($('#p-tg').value), email: $('#p-email').value.trim(), portfolio: $('#p-port').value.trim(), images: formImages.slice()
+    };
+  }
+  var pvQueued = false;
+  function renderPreview() {
+    if (pvQueued) return; pvQueued = true;
+    requestAnimationFrame(function () {
+      pvQueued = false;
+      var d = draft(), a = normalize(Object.assign({ id: 'preview' }, d, { priceFrom: isFinite(d.priceFrom) ? d.priceFrom : null }));
+      a.title = d.title || 'Заголовок вашего объявления'; a.desc = d.desc || 'Здесь появится описание услуги.'; a.name = d.name || 'Ваше имя';
+      var box = $('#preview'); clear(box); box.appendChild(card(a, { preview: true }));
+      $('#p-count').textContent = String($('#p-desc').value.length); $('#w-city').hidden = $('#p-fmt').value === 'remote';
+    });
+  }
+  function renderThumbs() {
+    var box = $('#thumbs'); clear(box);
+    formImages.forEach(function (s, i) {
+      box.appendChild(h('div', { class: 'thumb' }, h('img', { src: s, alt: 'Фото ' + (i + 1) }), h('button', { type: 'button', 'aria-label': 'Удалить фото ' + (i + 1), onclick: function () { formImages.splice(i, 1); renderThumbs(); renderPreview(); } }, '×')));
+    });
+  }
+  function encodeImage(im) {
+    var w = Math.min(1000, im.width), q = .82, out = '';
+    for (var tries = 0; tries < 8; tries++) {
+      var hh = Math.max(1, Math.round(im.height * w / im.width)), c = document.createElement('canvas'); c.width = w; c.height = hh;
+      var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, w, hh); x.drawImage(im, 0, 0, w, hh);
+      out = c.toDataURL('image/jpeg', q);
+      if (out.length <= MAX_IMG) return out;
+      if (q > .5) q -= .1; else w = Math.round(w * .82);
+    }
+    return out.length <= MAX_IMG * 1.5 ? out : '';
+  }
+  function readImage(file) {
+    return new Promise(function (res, rej) {
+      if (!/^image\//.test(file.type)) { rej(new Error('type')); return; }
+      var fr = new FileReader();
+      fr.onload = function () { var im = new Image(); im.onload = function () { var o = encodeImage(im); o ? res(o) : rej(new Error('big')); }; im.onerror = function () { rej(new Error('bad')); }; im.src = fr.result; };
+      fr.onerror = function () { rej(new Error('read')); }; fr.readAsDataURL(file);
+    });
+  }
+  $('#p-img').addEventListener('change', function () {
+    var files = Array.prototype.slice.call(this.files || []), err = $('#e-img'), inp = this; err.textContent = '';
+    var room = 3 - formImages.length;
+    if (!room) { err.textContent = 'Можно добавить не больше 3 фото'; inp.value = ''; return; }
+    var jobs = files.slice(0, room).map(function (f) { return readImage(f).then(function (s) { formImages.push(s); }, function (e) { err.textContent = e.message === 'type' ? 'Выберите файл изображения' : 'Не удалось обработать фото'; }); });
+    Promise.all(jobs).then(function () { inp.value = ''; renderThumbs(); renderPreview(); });
+  });
+  function fieldErr(id, wrap, msg) { var e = $('#' + id); if (e) e.textContent = msg || ''; var w = $('#' + wrap); if (w) w.classList.toggle('bad', !!msg); return !msg; }
+  function validate() {
+    var d = draft(), ok = true, firstBad = null;
+    function mark(good, el) { if (!good) { ok = false; if (!firstBad) firstBad = el; } }
+    mark(fieldErr('e-title', 'w-title', d.title.length < 5 ? 'Заголовок: минимум 5 символов' : ''), '#p-title');
+    mark(fieldErr('e-desc', 'w-desc', d.desc.length < 30 ? 'Описание: минимум 30 символов, расскажите об услуге подробнее' : ''), '#p-desc');
+    mark(fieldErr('e-city', 'w-city', d.format !== 'remote' && !d.city ? 'Укажите город' : ''), '#p-city');
+    mark(fieldErr('e-price', 'w-price', d.priceFrom != null && (!isFinite(d.priceFrom) || d.priceFrom < 0 || d.priceFrom > 100000000) ? 'Цена должна быть числом от 0 до 100 000 000' : ''), '#p-price');
+    mark(fieldErr('e-name', 'w-name', d.name.length < 2 ? 'Укажите имя или название студии' : ''), '#p-name');
+    mark(fieldErr('e-phone', 'w-phone', d.phone && !okPhone(d.phone) ? 'Телефон: 10–15 цифр, например +7 900 123-45-67' : ''), '#p-phone');
+    mark(fieldErr('e-tg', 'w-tg', d.telegram && !RE_TG.test(d.telegram) ? 'Telegram: 5–32 символа, латиница, цифры и _' : ''), '#p-tg');
+    mark(fieldErr('e-email', 'w-email', d.email && !okEmail(d.email) ? 'Проверьте e-mail, например name@example.com' : ''), '#p-email');
+    mark(fieldErr('e-port', 'w-port', d.portfolio && !okUrl(d.portfolio) ? 'Ссылка должна начинаться с http:// или https://' : ''), '#p-port');
+    var noContact = !d.phone && !d.telegram && !d.email; $('#e-contact').textContent = noContact ? 'Добавьте хотя бы один контакт: телефон, Telegram или e-mail' : '';
+    mark(!noContact, '#p-phone');
+    $('#e-ok').textContent = $('#p-ok').checked ? '' : 'Нужно согласие на публикацию контактов'; mark($('#p-ok').checked, '#p-ok');
+    var errs = $$('#postForm .err').map(function (e) { return e.textContent; }).filter(Boolean), sum = $('#errsum'); clear(sum);
+    if (errs.length) { sum.hidden = false; sum.appendChild(h('b', { text: 'Не хватает данных:' })); sum.appendChild(h('ul', null, errs.map(function (t) { return h('li', { text: t }); }))); } else sum.hidden = true;
+    if (firstBad) { var f = $(firstBad); if (f) f.focus(); }
+    return ok ? d : null;
+  }
+  function newId() { return 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function resetForm() {
+    $('#postForm').reset(); formStart = 0; fastWarned = false; formImages = []; renderThumbs(); editing = null; modeForm();
+    $$('.field.bad').forEach(function (f) { f.classList.remove('bad'); }); $$('#postForm .err').forEach(function (e) { e.textContent = ''; }); $('#errsum').hidden = true; $('#p-status').textContent = ''; renderPreview();
+  }
+  function modeForm() {
+    $('#p-submit').textContent = editing ? 'Сохранить изменения' : (BACKEND ? 'Опубликовать' : 'Сохранить объявление');
+    $('#h-post').textContent = editing ? 'Изменить объявление' : 'Подать объявление';
+    $('#postEyebrow').textContent = editing ? 'Редактирование' : 'Новое объявление';
+    $('#p-cancel').hidden = !editing; $('#p-clear').hidden = !!editing;
+  }
+  function startEdit(a) {
+    if (!a.images.length && a.imgs && !a.local && !a._imgDone) { ensureImages(a, function () { startEdit(a); }); return; }
+    editing = { id: a.id, local: !!a.local, createdAt: a.createdAt, expiresAt: a.expiresAt };
+    $('#p-title').value = a.title; $('#p-cat').value = a.category; $('#p-fmt').value = a.format; $('#p-city').value = a.city; $('#p-desc').value = a.desc;
+    $('#p-price').value = a.priceFrom == null ? '' : String(a.priceFrom); $('#p-ptype').value = a.priceType; $('#p-tags').value = a.tags.join(', ');
+    $('#p-name').value = a.name; $('#p-phone').value = a.phone; $('#p-tg').value = a.telegram ? '@' + a.telegram : ''; $('#p-email').value = a.email; $('#p-port').value = a.portfolio;
+    $('#p-ok').checked = true; formImages = a.images.slice(); renderThumbs(); modeForm(); go('post'); renderPreview();
+  }
+  /* ---------- защита от спама ---------- */
+  var SPAM_WORDS = ['казино', 'ставки на спорт', 'букмекер', 'кредит без', 'быстрые деньги', 'лёгкие деньги', 'легкие деньги', 'заработок без вложений', 'пассивный доход', 'гарантированный доход', 'криптовалют', 'биткоин', 'инвестиц', 'проститут', 'порно', 'купить диплом', 'накрутка', 'обнал', 'сетевой маркетинг', '^займ', '^займы', '^займов', '^секс', '^интим', '^эскорт', '^виагра', '^18+', '^bitcoin', '^casino', '^viagra', '^porn', '^loan'];
+  var SPAM_LIMIT = 3, DAY_MS = 864e5;
+  function spamState() { var sp = lsGet('orbita.spam', null) || {}; var now = Date.now(); sp.strikes = (sp.strikes || []).filter(function (t) { return now - t < DAY_MS; }); sp.posts = (sp.posts || []).filter(function (t) { return now - t < DAY_MS; }); sp.hashes = sp.hashes || []; sp.blockedUntil = sp.blockedUntil > now ? sp.blockedUntil : 0; return sp; }
+  function hashStr(t) { var x = 5381; for (var i = 0; i < t.length; i++) x = ((x << 5) + x + t.charCodeAt(i)) | 0; return String(x); }
+  function spamCheck(d, sp) {
+    var score = 0, why = [], body = d.title + ' ' + d.desc, low = (body + ' ' + d.name + ' ' + d.tags.join(' ')).toLowerCase();
+    if (/(https?:\/\/|www\.|t\.me\/|bit\.ly|tinyurl)/i.test(body)) { score += 3; why.push('ссылки в тексте (ссылку на портфолио укажите в отдельном поле)'); }
+    var padded = ' ' + low.replace(/[^a-zа-яё0-9+]+/g, ' ') + ' ';
+    var bad = SPAM_WORDS.filter(function (w) { return w.charAt(0) === '^' ? padded.indexOf(' ' + w.slice(1) + ' ') >= 0 : low.indexOf(w) >= 0; }); if (bad.length) { score += 3; why.push('запрещённые темы'); }
+    if (/(.)\1{6,}/.test(body)) { score += 2; why.push('повторяющиеся символы'); }
+    var cnt = {}, rep = false; low.split(/[^a-zа-яё0-9]+/i).forEach(function (w) { if (w.length > 3) { cnt[w] = (cnt[w] || 0) + 1; if (cnt[w] >= 6) rep = true; } }); if (rep) { score += 2; why.push('повторяющиеся слова'); }
+    var letters = body.replace(/[^A-Za-zА-ЯЁа-яё]/g, ''), ups = body.replace(/[^A-ZА-ЯЁ]/g, ''); if (letters.length >= 20 && ups.length / letters.length > .6) { score += 2; why.push('текст заглавными буквами'); }
+    if (/[!?]{4,}/.test(body)) { score += 1; why.push('много восклицательных знаков'); }
+    if ((body.match(/[\u2600-\u27BF\uD83C-\uDBFF\uDC00-\uDFFF]/g) || []).length > 16) { score += 2; why.push('слишком много эмодзи'); }
+    if ((d.desc.match(/\+?\d[\d\s()\-]{8,}\d/g) || []).length > 2) { score += 2; why.push('много телефонов в тексте'); }
+    if (sp.hashes.indexOf(hashStr(low)) >= 0 && !editing) { score += 3; why.push('такое объявление уже размещали'); }
+    return { score: score, why: why };
+  }
+  function fmtTime(ts) { return new Date(ts).toLocaleString('ru-RU', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+  function showBlockNote() {
+    var sp = spamState(), n = $('#blockNote'); if (!n) return;
+    if (sp.blockedUntil) { n.hidden = false; n.textContent = 'Публикация с этого устройства временно заблокирована до ' + fmtTime(sp.blockedUntil) + ': система обнаружила спам. Если это ошибка, напишите на ' + SITE.email + '.'; } else n.hidden = true;
+  }
+  function spamGate(d) {
+    var sp = spamState(), now = Date.now(), msg = '';
+    if (sp.blockedUntil) { showBlockNote(); return 'Публикация временно заблокирована до ' + fmtTime(sp.blockedUntil) + ' из-за спама.'; }
+    var strike = function (n) { for (var i = 0; i < n; i++) sp.strikes.push(now); if (sp.strikes.length >= SPAM_LIMIT) { sp.blockedUntil = now + DAY_MS; msg = ' Устройство заблокировано на 24 часа до ' + fmtTime(sp.blockedUntil) + '.'; } lsSet('orbita.spam', sp); showBlockNote(); };
+    if (!editing) {
+      if (sp.posts.length >= 3) return 'Не больше 3 новых объявлений в сутки с одного устройства. Попробуйте завтра.';
+      var lastP = sp.posts.length ? sp.posts[sp.posts.length - 1] : 0; if (now - lastP < 60000) return 'Подождите ' + Math.ceil((60000 - (now - lastP)) / 1000) + ' с перед следующим объявлением.';
+    }
+    var r = spamCheck(d, sp);
+    if (r.score >= 3) { strike(1); return 'Объявление похоже на спам: ' + r.why.join('; ') + '. Исправьте текст.' + (msg || (' Попыток до блокировки: ' + Math.max(0, SPAM_LIMIT - sp.strikes.length) + '.')); }
+    return '';
+  }
+  function spamRecord(d) { var sp = spamState(); sp.posts.push(Date.now()); sp.hashes.push(hashStr((d.title + ' ' + d.desc + ' ' + d.name + ' ' + d.tags.join(' ')).toLowerCase())); sp.hashes = sp.hashes.slice(-20); lsSet('orbita.spam', sp); }
+  var formStart = 0, fastWarned = false;
+  $('#postForm').addEventListener('input', function () { if (!formStart) formStart = Date.now(); });
+  function setSaved(msg) { var n = $('#savedNote'); if (!n) return; n.hidden = !msg; clear(n); if (msg) n.appendChild(h('b', { text: msg })); }
+  var lastSubmit = 0;
+  function trySubmit() {
+    var t = Date.now(); if (t - lastSubmit < 120) return; lastSubmit = t;
+    try { submitForm(); } catch (er) { var s0 = $('#p-status'); s0.className = 'status err-on'; s0.textContent = 'Ошибка при сохранении: ' + (er && er.message ? er.message : er) + '. Сообщите об этом на ' + SITE.email; }
+  }
+  $('#p-submit').addEventListener('click', function (e) { e.preventDefault(); trySubmit(); });
+  $('#postForm').addEventListener('submit', function (e) { e.preventDefault(); trySubmit(); });
+  function submitForm() {
+    var d = validate(), s = $('#p-status');
+    if (!d) { s.className = 'status err-on'; s.textContent = 'Исправьте отмеченные поля.'; var es = $('#errsum'); if (es && !es.hidden && es.scrollIntoView) es.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    var gate = spamGate(d);
+    if (gate) { s.className = 'status err-on'; s.textContent = gate; var es2 = $('#errsum'); es2.hidden = false; clear(es2); es2.appendChild(h('b', { text: gate })); if (es2.scrollIntoView) es2.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    var now = Date.now(), base = editing ? { id: editing.id, createdAt: editing.createdAt, expiresAt: editing.expiresAt, authorId: editing.authorId || '' } : { id: newId(), createdAt: now, expiresAt: now + LIFE * DAY };
+    var wasEditing = !!editing, wasLocal = editing ? editing.local : true, btn = $('#p-submit');
+    var saveLocalAd = function (fallback) {
+      var ad = normalize(Object.assign({}, d, base), { local: true });
+      var i = local.findIndex(function (x) { return x.id === ad.id; });
+      if (i >= 0) local[i] = ad; else local.unshift(ad);
+      if (!saveLocal()) { local.splice(local.indexOf(ad), 1); s.className = 'status'; s.textContent = 'Не хватает места в браузере: уменьшите или уберите фото.'; return; }
+      if (!wasEditing) spamRecord(d);
+      resetForm(); updateNav(); go('saved');
+      setSaved(storageOk ? (wasEditing ? 'Изменения сохранены.' : 'Объявление сохранено на этом устройстве.') : 'Браузер не разрешает хранение данных: объявление есть на странице, но пропадёт при её закрытии. Скопируйте его или откройте сайт в обычном браузере.');
+      toast(fallback ? 'Нет связи с каталогом: объявление сохранено на устройстве. Нажмите «Опубликовать», когда появится интернет' : wasEditing ? 'Изменения сохранены' : 'Объявление сохранено. Нажмите «Отправить на публикацию», чтобы его увидели все');
+    };
+    if (!BACKEND || (wasEditing && wasLocal && !BACKEND)) { saveLocalAd(false); return; }
+    btn.disabled = true; s.className = 'status'; s.textContent = 'Публикуем…';
+    var ad = normalize(Object.assign({}, d, base), {});
+    publishRemote(ad, !wasEditing || wasLocal).then(function () {
+      btn.disabled = false; s.textContent = '';
+      if (wasEditing && wasLocal) { local = local.filter(function (x) { return x.id !== ad.id; }); saveLocal(); }
+      if (!wasEditing) spamRecord(d);
+      resetForm(); updateNav(); go('saved'); setSaved(wasEditing ? 'Изменения сохранены и уже на сайте.' : 'Объявление опубликовано и видно всем.'); toast(wasEditing ? 'Изменения сохранены и уже на сайте' : 'Опубликовано: объявление видно всем посетителям. Оно остаётся на сайте и редактируется в разделе «Избранное и мои»');
+    }, function (er) {
+      btn.disabled = false; s.textContent = '';
+      if (er && (er.status === 401 || er.status === 403)) { s.className = 'status err-on'; s.textContent = 'Сервер не принял объявление: слишком частые публикации или публикация с этого устройства заблокирована. Подождите минуту и повторите.'; return; }
+      saveLocalAd(true);
+    });
+  }
+  $('#p-clear').addEventListener('click', resetForm); $('#p-cancel').addEventListener('click', function () { resetForm(); go('saved'); });
+  $('#postForm').addEventListener('input', renderPreview); $('#postForm').addEventListener('change', renderPreview);
+
+  function removeAd(a) {
+    if (a.local) { local = local.filter(function (x) { return x.id !== a.id; }); saveLocal(); toast('Объявление удалено'); updateNav(); renderPage(cur); return; }
+    if (!BACKEND) return;
+    fbWrite('DELETE', 'adimg/' + a.id).catch(function () { /* без фото */ }).then(function () { return fbWrite('DELETE', 'ads/' + a.id); })
+      .then(function () { fbAds = fbAds.filter(function (x) { return x.id !== a.id; }); rebuildRemote(); toast('Объявление удалено с сайта'); updateNav(); renderPage(cur); }, function () { toast('Не удалось удалить: проверьте интернет и повторите'); });
+  }
+  function renew(a) {
+    var until = Date.now() + LIFE * DAY;
+    if (a.local) { var l = local.find(function (x) { return x.id === a.id; }); if (l) { l.expiresAt = until; saveLocal(); toast('Продлено на ' + LIFE + ' дней'); renderSaved(); } return; }
+    if (!BACKEND) return;
+    fbWrite('PATCH', 'ads/' + a.id, { expiresAt: until }).then(function () { a.expiresAt = until; toast('Продлено на ' + LIFE + ' дней'); renderPage(cur); }, function () { toast('Не удалось продлить: проверьте интернет и повторите'); });
+  }
+
+  /* ---------- 3D-наклон карточек ---------- */
+  if (fine && !calm) {
+    document.addEventListener('pointermove', function (e) {
+      var t = e.target.closest ? e.target.closest('.tilt') : null; if (!t) return;
+      var r = t.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      t.style.setProperty('--ry', ((x - .5) * 9).toFixed(2) + 'deg'); t.style.setProperty('--rx', ((.5 - y) * 9).toFixed(2) + 'deg');
+      t.style.setProperty('--mx', (x * 100).toFixed(1) + '%'); t.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+    });
+    document.addEventListener('pointerout', function (e) {
+      var t = e.target.closest ? e.target.closest('.tilt') : null;
+      if (t && (!e.relatedTarget || !t.contains(e.relatedTarget))) { t.style.setProperty('--rx', '0deg'); t.style.setProperty('--ry', '0deg'); }
+    });
+  }
+
+  /* ---------- звёзды и падающие звёзды ---------- */
+  (function stars() {
+    var cv = $('#stars'), cx = cv.getContext('2d'); if (!cx) return;
+    var W = 0, H = 0, list = [], shoot = null, raf = 0, last = 0, nextShoot = performance.now() + 4000;
+    function make() { var n = Math.max(260, Math.min(1000, Math.round(W * H / 2000))); list = []; for (var i = 0; i < n; i++) list.push({ x: Math.random() * W, y: Math.random() * H, z: .2 + Math.random() * .8, p: Math.random() * 6.28, s: .4 + Math.random() }); }
+    function size() { var d = Math.min(window.devicePixelRatio || 1, 3); W = window.innerWidth; H = window.innerHeight; cv.width = Math.round(W * d); cv.height = Math.round(H * d); cv.style.width = W + 'px'; cv.style.height = H + 'px'; cx.setTransform(d, 0, 0, d, 0, 0); make(); draw(0); }
+    function draw(t) {
+      cx.clearRect(0, 0, W, H); var sy = window.scrollY || 0;
+      for (var i = 0; i < list.length; i++) {
+        var s = list[i], y = ((s.y - sy * s.z * .12) % H + H) % H, x = s.x + Math.sin(t * .00005 * s.s + s.p) * 6 * s.z;
+        var a = (.3 + .7 * s.z) * (.62 + .38 * Math.sin(t * .0013 * s.s + s.p)), r = .3 + s.z * 1.3;
+        var tn = Math.floor(s.p * 7) % 3, col = tn === 0 ? '255,255,255' : tn === 1 ? '190,215,255' : '255,236,200';
+        cx.fillStyle = 'rgba(' + col + ',' + a.toFixed(3) + ')'; cx.beginPath(); cx.arc(x, y, r, 0, 6.2832); cx.fill();
+        if (s.z > .88) { cx.fillStyle = 'rgba(255,255,255,' + (a * .15).toFixed(3) + ')'; cx.beginPath(); cx.arc(x, y, r * 3.6, 0, 6.2832); cx.fill(); }
+      }
+      if (shoot) {
+        var k = (t - shoot.t0) / 900; if (k >= 1) shoot = null; else {
+          var px = shoot.x + shoot.vx * k, py = shoot.y + shoot.vy * k, g = cx.createLinearGradient(px, py, px - shoot.vx * .18, py - shoot.vy * .18);
+          g.addColorStop(0, 'rgba(255,255,255,' + (1 - k).toFixed(2) + ')'); g.addColorStop(1, 'rgba(255,255,255,0)');
+          cx.strokeStyle = g; cx.lineWidth = 1.8; cx.beginPath(); cx.moveTo(px, py); cx.lineTo(px - shoot.vx * .18, py - shoot.vy * .18); cx.stroke();
+        }
+      } else if (t > nextShoot && !calm) { shoot = { x: W * (.4 + Math.random() * .6), y: Math.random() * H * .4, vx: -W * .5, vy: H * .3, t0: t }; nextShoot = t + 5000 + Math.random() * 6000; }
+    }
+    function loop(t) { raf = requestAnimationFrame(loop); if (t - last < 33) return; last = t; draw(t); }
+    window.addEventListener('resize', size); size();
+    if (calm) { window.addEventListener('scroll', function () { draw(0); }, { passive: true }); return; }
+    raf = requestAnimationFrame(loop);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) cancelAnimationFrame(raf); else raf = requestAnimationFrame(loop); });
+  })();
+
+  /* ---------- планета: текстура и спутник ---------- */
+  (function planet() {
+    var el = $('#planet'), stage = $('#stage'), satB = $('#satB'), satF = $('#satF');
+    function texture() {
+      var big = Math.max(window.innerWidth, 1) * Math.min(window.devicePixelRatio || 1, 3) > 2400, w = big ? 2048 : 1280, hh = w / 2;
+      var c = document.createElement('canvas'); c.width = w; c.height = hh; var x = c.getContext('2d'); if (!x) return;
+      var img = x.createImageData(w, hh), d = img.data, perm = new Uint8Array(512), seed = 1234567;
+      for (var i = 0; i < 256; i++) perm[i] = i;
+      for (var j = 255; j > 0; j--) { seed = (seed * 1664525 + 1013904223) >>> 0; var k = seed % (j + 1), t = perm[j]; perm[j] = perm[k]; perm[k] = t; }
+      for (var q = 0; q < 256; q++) perm[q + 256] = perm[q];
+      function lat(ix, iy) { return perm[(perm[ix & 255] + iy) & 511] / 255; }
+      function vn(px, py, per) {
+        var xi = Math.floor(px), yi = Math.floor(py), xf = px - xi, yf = py - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+        var x0 = ((xi % per) + per) % per, x1 = (((xi + 1) % per) + per) % per, a = lat(x0, yi), b = lat(x1, yi), c2 = lat(x0, yi + 1), d2 = lat(x1, yi + 1);
+        return a + (b - a) * u + (c2 - a) * v + (a - b - c2 + d2) * u * v;
+      }
+      var stops = [[0, 6, 10, 28], [.3, 24, 40, 86], [.5, 70, 110, 178], [.68, 150, 190, 235], [.84, 218, 235, 255], [1, 255, 255, 255]];
+      function ramp(v) { v = Math.max(0, Math.min(1, v)); for (var s = 1; s < stops.length; s++) if (v <= stops[s][0]) { var a = stops[s - 1], b = stops[s], f = (v - a[0]) / (b[0] - a[0]); return [a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f, a[3] + (b[3] - a[3]) * f]; } return [255, 226, 170]; }
+      var row = 0;
+      (function chunk() {
+        var end = Math.min(hh, row + 48);
+        for (; row < end; row++) {
+          var v = row / hh, lat0 = Math.abs(v - .5) * 2;
+          for (var col = 0; col < w; col++) {
+            var u = col / w, n = 0, amp = .5, tot = 0;
+            for (var o = 0; o < 5; o++) { var f = 4 << o; n += vn(u * f, v * f * .5, f) * amp; tot += amp; amp *= .52; }
+            n /= tot;
+            var band = .5 + .5 * Math.sin(v * 22 + n * 5.5), val = n * .7 + band * .3;
+            var ridge = 1 - Math.abs(2 * vn(u * 12, v * 6, 12) - 1), vein = ridge > .93 ? (ridge - .93) * 9 : 0;
+            val = val * (1 - lat0 * .18) + vein * .5;
+            var rgb = ramp(val * 1.15 - .08), p = (row * w + col) * 4;
+            d[p] = rgb[0]; d[p + 1] = rgb[1]; d[p + 2] = rgb[2]; d[p + 3] = 255;
+          }
+        }
+        if (row < hh) setTimeout(chunk, 0);
+        else { x.putImageData(img, 0, 0); try { el.style.setProperty('--tex', 'url(' + c.toDataURL('image/jpeg', .92) + ')'); } catch (e) { /* без текстуры */ } }
+      })();
+    }
+    setTimeout(texture, 80);
+    var theta = 2.2, last = 0;
+    function place(th) {
+      var ps = el.getBoundingClientRect().width || 240, rx = ps * 2 * .5 * .8, ry = ps * .58 * .5 * .8, ph = -16 * Math.PI / 180;
+      var x = rx * Math.cos(th), y = ry * Math.sin(th), X = x * Math.cos(ph) - y * Math.sin(ph), Y = x * Math.sin(ph) + y * Math.cos(ph);
+      [satB, satF].forEach(function (s) { s.style.transform = 'translate(' + X.toFixed(1) + 'px,' + Y.toFixed(1) + 'px)'; });
+      var front = Math.sin(th) >= 0; satF.style.visibility = front ? 'visible' : 'hidden'; satB.style.visibility = front ? 'hidden' : 'visible';
+    }
+    function loop(t) { requestAnimationFrame(loop); if (!stage.offsetParent || document.hidden) return; var dt = Math.min(64, t - last); last = t; theta += dt * .0007; place(theta); }
+    place(theta); if (!calm) requestAnimationFrame(loop);
+    window.addEventListener('resize', function () { place(theta); });
+  })();
+
+  /* ---------- тексты, зависящие от режима ---------- */
+  function applyMode() {
+    var T = function (id, txt) { var e = $('#' + id); if (e) e.textContent = txt; };
+    if (BACKEND) {
+      T('faq-vis', 'Нажмите «Опубликовать»: объявление сразу появится в каталоге у всех посетителей и останется на сайте 30 дней. Потом его можно продлить.');
+      T('faq-edit', 'Откройте «Избранное и мои», найдите своё объявление и нажмите «Изменить», «Продлить» или «Удалить». Изменения сразу видны на сайте. Сайт запоминает вас в этом браузере, регистрация не нужна.');
+      T('faq-key', 'В разделе «Избранное и мои» есть «Ключ владельца». Скопируйте его и сохраните. На другом устройстве вставьте ключ в то же место и нажмите «Восстановить»: ваши объявления снова станут доступны для редактирования.');
+      T('pv-store', 'Опубликованное объявление хранится в общей базе площадки, пока вы его не удалите. Избранное и ключ владельца хранятся в памяти вашего браузера. Сайт не использует файлы cookie для слежки и не подключает счётчики и рекламу.');
+      T('pv-pub', 'Кнопка «Опубликовать» отправляет текст и фото объявления в общую базу, и ваши контакты, указанные в объявлении, сразу становятся видны всем посетителям. Для хранения базы используется сервис Google Firebase: он получает данные объявления и анонимный идентификатор вашего браузера, по которому вы можете редактировать объявление.');
+      T('pv-del', 'Удалите объявление сами в разделе «Избранное и мои». Если доступа нет, напишите на proksi874@gmail.com: мы удалим его из каталога.');
+      T('postIntro', 'Размещение бесплатное: объявление сразу появится в каталоге и будет там 30 дней. Вы сможете изменить, продлить или удалить его в разделе «Избранное и мои». Обязательны заголовок, описание, имя и хотя бы один контакт. Направление указывать необязательно.');
+    } else {
+      T('faq-vis', 'После заполнения формы объявление сохраняется на вашем устройстве. Нажмите «Отправить на публикацию»: откроется письмо владельцу площадки с текстом объявления. После проверки объявление добавляют в общий каталог. Фото приложите к письму.');
+      T('faq-edit', 'Откройте «Избранное и мои», найдите объявление и нажмите «Изменить», «Продлить» или «Удалить». Это работает на том устройстве, где объявление создано. Уже опубликованное в общем каталоге объявление изменит или удалит владелец площадки по вашему письму на proksi874@gmail.com.');
+      T('faq-key', 'Объявления до публикации хранятся только в браузере, где вы их создали. Откройте сайт там же. Для опубликованного объявления напишите владельцу на proksi874@gmail.com.');
+    }
+  }
+  $('#keyCopy').addEventListener('click', function () {
+    var st2 = $('#keyStatus');
+    if (!authState || !authState.refreshToken) { st2.className = 'status'; st2.textContent = 'Ключ появится после первой публикации объявления.'; return; }
+    copy(btoa(JSON.stringify({ r: authState.refreshToken, u: authState.uid })), 'Ключ'); st2.className = 'status ok'; st2.textContent = 'Ключ скопирован. Храните его в надёжном месте.';
+  });
+  $('#keyApply').addEventListener('click', function () {
+    var st2 = $('#keyStatus'), v = $('#keyIn').value.trim(), k;
+    try { k = JSON.parse(atob(v)); } catch (e) { k = null; }
+    if (!k || !k.r || !k.u) { st2.className = 'status'; st2.textContent = 'Ключ не распознан. Скопируйте его целиком.'; return; }
+    var prev = authState; saveAuth({ idToken: '', refreshToken: String(k.r), uid: String(k.u), exp: 0 });
+    getAuth().then(function () { st2.className = 'status ok'; st2.textContent = 'Готово: объявления привязаны к этому браузеру.'; $('#keyIn').value = ''; updateNav(); loadCatalog(); },
+      function () { saveAuth(prev); st2.className = 'status'; st2.textContent = 'Не удалось проверить ключ. Проверьте ключ и интернет.'; });
+  });
+
+  window.addEventListener('error', function (ev) {
+    var b = $('#errBanner'); if (!b) { b = h('div', { class: 'errsum', id: 'errBanner', style: 'position:fixed;left:12px;right:12px;bottom:12px;z-index:60' }); document.body.appendChild(b); }
+    b.textContent = 'Ошибка на странице: ' + (ev && ev.message ? ev.message : 'неизвестная') + '. Обновите страницу или напишите на ' + SITE.email; setTimeout(function () { if (b.parentNode) b.parentNode.removeChild(b); }, 9000);
+  });
+  /* ---------- старт ---------- */
+  buildNav(); buildPostForm(); syncFilters(); applyMode(); modeForm();
+  route();
+  if (BACKEND) { loadCatalog(); setInterval(function () { if (!document.hidden) loadCatalog(); }, 60000); document.addEventListener('visibilitychange', function () { if (!document.hidden) loadCatalog(); }); }
+  /* общий каталог: файл ads.json рядом с index.html (его заполняет владелец после проверки) */
+  try {
+    if (/^https?:$/.test(location.protocol) && window.fetch) {
+      fetch('ads.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).then(function (arr) {
+        if (!Array.isArray(arr) || !arr.length) return;
+        arr.slice(0, 500).forEach(function (r) { if (r && typeof r === 'object') staticAds.push(normalize(r, {})); });
+        rebuildRemote(); updateNav(); renderPage(cur);
+      }).catch(function () { /* каталога нет: показываем только свои объявления */ });
+    }
+  } catch (e) { /* без каталога */ }
+})();
+</script>
+
+</body>
+</html>
